@@ -1,2 +1,23 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import { getSessionState } from '$lib/state/sessions.svelte';
+	import Header from '$lib/components/Header.svelte';
+	import Sidebar from '$lib/components/Sidebar.svelte';
+	import MainContent from '$lib/components/MainContent.svelte';
+
+	const state = getSessionState();
+</script>
+
+<div class="flex flex-col h-screen bg-surface font-mono">
+	<Header />
+	<div class="flex flex-1 overflow-hidden">
+		<Sidebar
+			sessions={state.sessions}
+			selectedId={state.selectedId}
+			count={state.count}
+			onSelect={state.select}
+			onUpload={state.upload}
+			onClearAll={state.clearAll}
+		/>
+		<MainContent selected={state.selected} onUpload={state.upload} />
+	</div>
+</div>
