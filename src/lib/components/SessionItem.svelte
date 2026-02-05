@@ -20,6 +20,15 @@
 		const days = Math.floor(hours / 24);
 		return `${days}d ago`;
 	}
+
+	// Truncate long names (UUIDs, hashes) to a reasonable length
+	const displayName = $derived.by((): string => {
+		const name = session.name;
+		if (name.length <= 24) return name;
+		return name.slice(0, 21) + '...';
+	});
+
+	const formatLabel = $derived(session.agentFormat && session.agentFormat !== 'unknown' ? session.agentFormat : null);
 </script>
 
 <button
@@ -27,16 +36,23 @@
 		? 'bg-surface-selected'
 		: 'hover:bg-surface-hover'}"
 	onclick={() => onSelect(session.id)}
+	title={session.name}
 >
 	<div class="flex items-center gap-2">
 		<span
 			class="w-2 h-2 rounded-full shrink-0 {isSelected ? 'bg-accent' : 'bg-muted'}"
 		></span>
 		<span class="text-sm {isSelected ? 'text-foreground-bright' : 'text-foreground'} truncate">
-			{session.name}/
+			{displayName}/
 		</span>
 	</div>
-	<div class="text-xs text-muted ml-4 mt-0.5">
-		{session.stepCount} steps &middot; {formatRelativeTime(session.uploadedAt)}
+	<div class="flex items-center justify-between text-xs text-muted ml-4 mt-0.5">
+		<span>{session.stepCount} steps</span>
+		<span>{formatRelativeTime(session.uploadedAt)}</span>
 	</div>
+	{#if formatLabel}
+		<div class="text-xs ml-4 mt-0.5">
+			<span class="text-accent/70">{formatLabel}</span>
+		</div>
+	{/if}
 </button>
