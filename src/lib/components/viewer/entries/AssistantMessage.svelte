@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { AssistantEntry } from '$lib/types/timeline';
+	import Markdown from '$lib/components/Markdown.svelte';
 
 	interface Props {
 		entry: AssistantEntry;
@@ -42,5 +43,5 @@
 			</div>
 		{/if}
 	{/if}
-	<p class="text-foreground text-sm whitespace-pre-wrap break-words">{entry.content}</p>
+	<Markdown content={entry.content} />
 </div>

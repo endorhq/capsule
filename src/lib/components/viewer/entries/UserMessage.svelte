@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { UserEntry } from '$lib/types/timeline';
+	import Markdown from '$lib/components/Markdown.svelte';
 
 	interface Props {
 		entry: UserEntry;
@@ -19,5 +20,5 @@
 		</span>
 		<span class="text-muted text-xs">{formatTime(entry.timestamp)}</span>
 	</div>
-	<p class="text-foreground text-sm whitespace-pre-wrap break-words">{entry.content}</p>
+	<Markdown content={entry.content} />
 </div>
