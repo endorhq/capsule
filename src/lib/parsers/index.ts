@@ -4,11 +4,13 @@ import { detectFormat } from './detect';
 import { parseCodexSession } from './codex';
 import { parseCopilotSession } from './copilot';
 import { parseGeminiSession } from './gemini';
+import { parseClaudeSession } from './claude';
 
 export { detectFormat } from './detect';
 export { parseCodexSession } from './codex';
 export { parseCopilotSession } from './copilot';
 export { parseGeminiSession } from './gemini';
+export { parseClaudeSession } from './claude';
 
 export function parseSession(
 	content: string,
@@ -25,6 +27,7 @@ export function parseSession(
 		case 'gemini':
 			return parseGeminiSession(content);
 		case 'claude':
+			return parseClaudeSession(content);
 		case 'opencode':
 			throw new Error(`Parser for "${format}" is not yet implemented`);
 		default:
