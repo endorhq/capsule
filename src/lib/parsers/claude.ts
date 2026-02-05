@@ -92,10 +92,19 @@ export function parseClaudeSession(content: string): ParsedSession {
 		}
 
 		const entryType = entry.type as string;
+
+		// Skip non-conversation entries before timestamp tracking
+		// (e.g. file-history-snapshot has timestamp nested inside snapshot, not top-level)
+		if (entryType === 'file-history-snapshot' || entryType === 'progress') {
+			continue;
+		}
+
 		const timestamp = new Date(entry.timestamp as string);
 
-		if (!startTime || timestamp < startTime) startTime = timestamp;
-		if (!endTime || timestamp > endTime) endTime = timestamp;
+		if (!isNaN(timestamp.getTime())) {
+			if (!startTime || timestamp < startTime) startTime = timestamp;
+			if (!endTime || timestamp > endTime) endTime = timestamp;
+		}
 
 		// Extract context from first entry with these fields
 		if (!context.cwd && entry.cwd) {
@@ -106,11 +115,6 @@ export function parseClaudeSession(content: string): ParsedSession {
 		}
 		if (!context.agentVersion && entry.version) {
 			context.agentVersion = entry.version as string;
-		}
-
-		// Skip non-conversation entries
-		if (entryType === 'file-history-snapshot' || entryType === 'progress') {
-			continue;
 		}
 
 		if (entryType === 'system') {

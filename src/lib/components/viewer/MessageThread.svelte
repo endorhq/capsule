@@ -49,12 +49,9 @@
 </script>
 
 <div class="flex-1 overflow-y-auto">
-	<div class="flex flex-col">
+	<div class="flex flex-col gap-2 py-2">
 		{#each groups as group, i (group.type === 'message' ? group.entry.id : group.entries[0].id)}
 			{#if group.type === 'message'}
-				{#if i > 0}
-					<div class="border-t border-edge/30"></div>
-				{/if}
 				{#if group.entry.type === 'user'}
 					<UserMessage entry={group.entry} />
 				{:else if group.entry.type === 'assistant'}
@@ -62,7 +59,7 @@
 				{/if}
 			{:else}
 				<!-- Tool group: indented block with left accent border -->
-				<div class="ml-8 mr-4 my-1 border-l-2 border-edge/40 pl-3 flex flex-col gap-0.5">
+				<div class="mx-4 my-1 flex flex-col gap-0.5">
 					{#each group.entries as entry (entry.id)}
 						{#if entry.type === 'tool_call'}
 							<ToolCallEntry {entry} />
