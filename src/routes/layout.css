@@ -55,3 +55,18 @@ body {
 		opacity: 0;
 	}
 }
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.loading-spinner {
+	width: 20px;
+	height: 20px;
+	border: 2px solid var(--color-edge);
+	border-top-color: var(--color-accent);
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}

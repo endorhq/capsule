@@ -14,6 +14,7 @@
 			sessions={state.sessions}
 			selectedId={state.selectedId}
 			count={state.count}
+			loading={state.loading}
 			onSelect={state.select}
 			onUpload={state.upload}
 			onClearAll={state.clearAll}

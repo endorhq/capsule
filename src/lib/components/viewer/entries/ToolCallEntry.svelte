@@ -54,7 +54,7 @@
 <div class="rounded-lg bg-surface-card/60 overflow-hidden">
 	<!-- Header bar — always visible -->
 	<button
-		class="flex items-center gap-2 w-full text-left px-3 py-2 text-xs hover:bg-surface-hover/50 transition-colors"
+		class="flex items-center gap-2 w-full text-left px-3 py-2 text-xs hover:bg-surface-hover/50 transition-colors cursor-pointer"
 		onclick={() => (expanded = !expanded)}
 	>
 		<span class="text-muted font-medium shrink-0">{'>_'}</span>

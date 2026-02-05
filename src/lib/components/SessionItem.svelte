@@ -32,7 +32,7 @@
 </script>
 
 <button
-	class="w-full text-left px-3 py-2.5 rounded transition-colors {isSelected
+	class="w-full text-left px-3 py-2.5 rounded transition-colors cursor-pointer {isSelected
 		? 'bg-surface-selected'
 		: 'hover:bg-surface-hover'}"
 	onclick={() => onSelect(session.id)}

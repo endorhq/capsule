@@ -7,12 +7,13 @@
 		sessions: SessionMeta[];
 		selectedId: string | null;
 		count: number;
+		loading?: boolean;
 		onSelect: (id: string) => void;
 		onUpload: (file: File) => void;
 		onClearAll: () => void;
 	}
 
-	let { sessions, selectedId, count, onSelect, onUpload, onClearAll }: Props = $props();
+	let { sessions, selectedId, count, loading = false, onSelect, onUpload, onClearAll }: Props = $props();
 
 	let fileInput: HTMLInputElement;
 
@@ -38,7 +39,7 @@
 			class="w-full py-2 text-sm font-medium bg-accent text-surface rounded cursor-pointer hover:brightness-110 transition"
 			onclick={() => fileInput.click()}
 		>
-			$ new --session
+			$ load --session
 		</button>
 		<input
 			bind:this={fileInput}
@@ -50,7 +51,14 @@
 	</div>
 
 	<div class="flex-1 overflow-y-auto px-1 py-1">
-		<SessionList {sessions} {selectedId} {onSelect} />
+		{#if loading}
+			<div class="flex flex-col items-center justify-center h-full gap-3 text-muted">
+				<div class="loading-spinner"></div>
+				<span class="text-xs">loading sessions...</span>
+			</div>
+		{:else}
+			<SessionList {sessions} {selectedId} {onSelect} />
+		{/if}
 	</div>
 
 	<SidebarFooter {onClearAll} />

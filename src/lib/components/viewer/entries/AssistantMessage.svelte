@@ -15,7 +15,7 @@
 </script>
 
 <div class="px-4 pt-3">
-	<div class="flex items-center gap-2 mb-1.5">
+	<div class="flex items-center gap-2 mb-3">
 		<span class="inline-block px-2 py-0.5 text-xs bg-[#201a10] text-[#e0b44c] rounded font-medium">
 			agent
 		</span>

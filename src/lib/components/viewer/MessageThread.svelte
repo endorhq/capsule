@@ -70,5 +70,17 @@
 				</div>
 			{/if}
 		{/each}
+
+		<!-- End of session marker -->
+		<div class="flex flex-col items-center py-8 select-none" aria-hidden="true">
+			<pre class="text-xs leading-[1.3] text-muted/60 font-mono">    *  .  *
+  .    __     .
+      /  \  *
+     | () |
+      \__/   .
+      /||\
+  ~~~'~~~~'~~~</pre>
+			<span class="text-xs text-muted/50 mt-3">// end of session</span>
+		</div>
 	</div>
 </div>
