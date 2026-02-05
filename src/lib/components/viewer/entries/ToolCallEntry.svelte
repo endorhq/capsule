@@ -107,6 +107,15 @@
 						<span class="text-foreground">{meta.duration}</span>
 					</div>
 				{/if}
+				{#if meta?.linesAdded !== undefined || meta?.linesRemoved !== undefined}
+					<div class="flex justify-between">
+						<span class="text-muted">lines</span>
+						<span class="text-foreground">
+							<span class="text-status-success">+{meta?.linesAdded ?? 0}</span>
+							<span class="text-status-error"> -{meta?.linesRemoved ?? 0}</span>
+						</span>
+					</div>
+				{/if}
 				<div class="flex justify-between">
 					<span class="text-muted">status</span>
 					<span class="{statusColor}">{entry.status}</span>

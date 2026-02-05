@@ -53,6 +53,8 @@ export interface ToolResultMeta {
 	command?: string;
 	files?: string[];
 	output?: string;
+	linesAdded?: number;
+	linesRemoved?: number;
 }
 
 export interface ToolCallEntry {

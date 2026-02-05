@@ -2,9 +2,11 @@ import type { ParsedSession } from '$lib/types/timeline';
 import type { AgentFormat } from '$lib/types/timeline';
 import { detectFormat } from './detect';
 import { parseCodexSession } from './codex';
+import { parseCopilotSession } from './copilot';
 
 export { detectFormat } from './detect';
 export { parseCodexSession } from './codex';
+export { parseCopilotSession } from './copilot';
 
 export function parseSession(
 	content: string,
@@ -16,8 +18,9 @@ export function parseSession(
 	switch (format) {
 		case 'codex':
 			return parseCodexSession(content);
-		case 'claude':
 		case 'copilot':
+			return parseCopilotSession(content);
+		case 'claude':
 		case 'gemini':
 		case 'opencode':
 			throw new Error(`Parser for "${format}" is not yet implemented`);
