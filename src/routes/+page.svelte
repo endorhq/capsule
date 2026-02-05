@@ -18,6 +18,12 @@
 			onUpload={state.upload}
 			onClearAll={state.clearAll}
 		/>
-		<MainContent selected={state.selected} onUpload={state.upload} />
+		<MainContent
+			selected={state.selected}
+			parsedSession={state.parsedSession}
+			parsing={state.parsing}
+			parseError={state.parseError}
+			onUpload={state.upload}
+		/>
 	</div>
 </div>

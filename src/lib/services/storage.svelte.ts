@@ -1,4 +1,5 @@
 import type { SessionMeta } from '$lib/types';
+import { detectFormat } from '$lib/parsers/detect';
 
 type Backend = 'opfs' | 'indexeddb' | 'memory';
 
@@ -197,6 +198,14 @@ export async function storeSession(file: File): Promise<SessionMeta> {
 	const baseName = file.name.replace(/\.(jsonl|json)$/, '');
 	const name = baseName.replace(/-/g, '_');
 
+	// Auto-detect agent format
+	let agentFormat: import('$lib/types/timeline').AgentFormat | undefined;
+	try {
+		agentFormat = detectFormat(content, ext);
+	} catch {
+		// Detection not critical
+	}
+
 	const meta: SessionMeta = {
 		id: crypto.randomUUID(),
 		name,
@@ -204,7 +213,8 @@ export async function storeSession(file: File): Promise<SessionMeta> {
 		format: ext,
 		size: file.size,
 		uploadedAt: Date.now(),
-		stepCount: computeStepCount(content, ext)
+		stepCount: computeStepCount(content, ext),
+		agentFormat
 	};
 
 	await writeSessionFile(meta.id, content);

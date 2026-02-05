@@ -1,0 +1,77 @@
+<script lang="ts">
+	import type { TimelineEntry } from '$lib/types/timeline';
+	import UserMessage from './entries/UserMessage.svelte';
+	import AssistantMessage from './entries/AssistantMessage.svelte';
+	import ToolCallEntry from './entries/ToolCallEntry.svelte';
+	import SystemMessage from './entries/SystemMessage.svelte';
+
+	interface Props {
+		timeline: TimelineEntry[];
+	}
+
+	let { timeline }: Props = $props();
+
+	// Group consecutive tool_call and system entries together so they
+	// render as a visually nested block between messages.
+	interface MessageGroup {
+		type: 'message';
+		entry: TimelineEntry;
+	}
+	interface ToolGroup {
+		type: 'tool_group';
+		entries: TimelineEntry[];
+	}
+	type Group = MessageGroup | ToolGroup;
+
+	const groups = $derived.by((): Group[] => {
+		const result: Group[] = [];
+		let pendingTools: TimelineEntry[] = [];
+
+		function flushTools() {
+			if (pendingTools.length > 0) {
+				result.push({ type: 'tool_group', entries: [...pendingTools] });
+				pendingTools = [];
+			}
+		}
+
+		for (const entry of timeline) {
+			if (entry.type === 'tool_call' || entry.type === 'system') {
+				pendingTools.push(entry);
+			} else {
+				flushTools();
+				result.push({ type: 'message', entry });
+			}
+		}
+		flushTools();
+
+		return result;
+	});
+</script>
+
+<div class="flex-1 overflow-y-auto">
+	<div class="flex flex-col">
+		{#each groups as group, i (group.type === 'message' ? group.entry.id : group.entries[0].id)}
+			{#if group.type === 'message'}
+				{#if i > 0}
+					<div class="border-t border-edge/30"></div>
+				{/if}
+				{#if group.entry.type === 'user'}
+					<UserMessage entry={group.entry} />
+				{:else if group.entry.type === 'assistant'}
+					<AssistantMessage entry={group.entry} />
+				{/if}
+			{:else}
+				<!-- Tool group: indented block with left accent border -->
+				<div class="ml-8 mr-4 my-1 border-l-2 border-edge/40 pl-3 flex flex-col gap-0.5">
+					{#each group.entries as entry (entry.id)}
+						{#if entry.type === 'tool_call'}
+							<ToolCallEntry {entry} />
+						{:else if entry.type === 'system'}
+							<SystemMessage {entry} />
+						{/if}
+					{/each}
+				</div>
+			{/if}
+		{/each}
+	</div>
+</div>

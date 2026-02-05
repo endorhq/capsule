@@ -12,6 +12,10 @@
 	--color-muted: #737373;
 	--color-edge: #262626;
 	--color-edge-dashed: #404040;
+	--color-surface-card: #141414;
+	--color-status-success: #22c55e;
+	--color-status-error: #f87171;
+	--color-status-pending: #eab308;
 	--font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', ui-monospace, monospace;
 }
 

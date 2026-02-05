@@ -1,3 +1,5 @@
+import type { AgentFormat } from './types/timeline';
+
 export interface SessionMeta {
 	id: string;
 	name: string;
@@ -6,4 +8,5 @@ export interface SessionMeta {
 	size: number;
 	uploadedAt: number;
 	stepCount: number;
+	agentFormat?: AgentFormat;
 }
