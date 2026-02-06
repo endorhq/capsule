@@ -22,7 +22,7 @@
 			<span class="text-muted text-xs ml-auto shrink-0">{session.timeline.length} steps</span>
 		</div>
 
-		<SessionInfo {session} />
+		<SessionInfo {session} {meta} />
 		<TokenStats tokens={session.totalTokens} cost={session.totalCost} />
 		<FileList files={session.files} />
 	</div>

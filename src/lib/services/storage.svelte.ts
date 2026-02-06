@@ -1,4 +1,4 @@
-import type { SessionMeta } from '$lib/types';
+import type { SessionMeta, SessionSource } from '$lib/types';
 import { detectFormat } from '$lib/parsers/detect';
 
 type Backend = 'opfs' | 'indexeddb' | 'memory';
@@ -265,4 +265,42 @@ export async function readSessionFile(id: string): Promise<string | null> {
 		return idbGet(key);
 	}
 	return memoryStore.get(key) ?? null;
+}
+
+export async function storeSessionFromContent(
+	filename: string,
+	content: string,
+	source?: SessionSource
+): Promise<SessionMeta> {
+	const ext = filename.endsWith('.jsonl') ? 'jsonl' : 'json';
+	const baseName = filename.replace(/\.(jsonl|json)$/, '');
+	const name = baseName.replace(/-/g, '_');
+
+	// Auto-detect agent format
+	let agentFormat: import('$lib/types/timeline').AgentFormat | undefined;
+	try {
+		agentFormat = detectFormat(content, ext);
+	} catch {
+		// Detection not critical
+	}
+
+	const meta: SessionMeta = {
+		id: crypto.randomUUID(),
+		name,
+		filename,
+		format: ext,
+		size: new Blob([content]).size,
+		uploadedAt: Date.now(),
+		stepCount: computeStepCount(content, ext),
+		agentFormat,
+		source
+	};
+
+	await writeSessionFile(meta.id, content);
+
+	const manifest = await readManifest();
+	manifest.push(meta);
+	await writeManifest(manifest);
+
+	return meta;
 }

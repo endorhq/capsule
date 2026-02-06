@@ -22,6 +22,9 @@
 		onUpdateTab: (tabId: string, updates: Partial<Pick<Tab, 'sessionId' | 'label' | 'filterText'>>) => void;
 		getSession: (id: string) => SessionMeta | undefined;
 		parseSessionById: (id: string) => Promise<ParsedSession>;
+		onGistLoad?: (url: string) => Promise<void>;
+		gistLoading?: boolean;
+		gistError?: string | null;
 	}
 
 	let {
@@ -33,7 +36,10 @@
 		onUpload,
 		onUpdateTab,
 		getSession,
-		parseSessionById
+		parseSessionById,
+		onGistLoad,
+		gistLoading = false,
+		gistError = null
 	}: Props = $props();
 
 	// Per-tab parsing state
@@ -112,7 +118,7 @@
 				<span>// session not found</span>
 			</div>
 		{:else}
-			<UploadZone onUpload={handleUpload} />
+			<UploadZone onUpload={handleUpload} {onGistLoad} {gistLoading} {gistError} />
 		{/if}
 	</div>
 </main>

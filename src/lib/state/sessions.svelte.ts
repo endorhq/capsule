@@ -4,11 +4,13 @@ import {
 	initStorage,
 	loadManifest,
 	storeSession,
+	storeSessionFromContent,
 	removeSession,
 	clearAllSessions,
 	readSessionFile
 } from '$lib/services/storage.svelte';
 import { parseSession } from '$lib/parsers';
+import { parseGistUrl, fetchGist, isGistError } from '$lib/services/gist';
 
 let sessions = $state<SessionMeta[]>([]);
 let selectedId = $state<string | null>(null);
@@ -16,6 +18,8 @@ let loading = $state(true);
 let parsedSession = $state<ParsedSession | null>(null);
 let parsing = $state(false);
 let parseError = $state<string | null>(null);
+let gistLoading = $state(false);
+let gistError = $state<string | null>(null);
 
 const selected = $derived(sessions.find((s) => s.id === selectedId));
 const count = $derived(sessions.length);
@@ -147,6 +151,46 @@ async function clearAll() {
 	parseCache.clear();
 }
 
+async function loadFromGist(gistInput: string): Promise<SessionMeta[]> {
+	gistError = null;
+	gistLoading = true;
+
+	try {
+		const gistId = parseGistUrl(gistInput);
+		if (!gistId) {
+			throw { type: 'invalid_url', message: 'Invalid gist URL or ID' };
+		}
+
+		const result = await fetchGist(gistId);
+		const loadedSessions: SessionMeta[] = [];
+
+		for (const file of result.files) {
+			const meta = await storeSessionFromContent(file.filename, file.content, {
+				type: 'gist',
+				gistId: result.metadata.id,
+				gistUrl: result.metadata.url,
+				owner: result.metadata.owner
+			});
+			sessions.push(meta);
+			loadedSessions.push(meta);
+		}
+
+		sortSessions();
+		return loadedSessions;
+	} catch (err) {
+		if (isGistError(err)) {
+			gistError = err.message;
+		} else if (err instanceof Error) {
+			gistError = err.message;
+		} else {
+			gistError = 'Failed to load gist';
+		}
+		throw err;
+	} finally {
+		gistLoading = false;
+	}
+}
+
 export function getSessionState() {
 	return {
 		get sessions() {
@@ -173,6 +217,12 @@ export function getSessionState() {
 		get parseError() {
 			return parseError;
 		},
+		get gistLoading() {
+			return gistLoading;
+		},
+		get gistError() {
+			return gistError;
+		},
 		initialize,
 		upload,
 		select,
@@ -180,6 +230,7 @@ export function getSessionState() {
 		remove,
 		clearAll,
 		getSession,
-		parseSessionById
+		parseSessionById,
+		loadFromGist
 	};
 }

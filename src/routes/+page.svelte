@@ -8,6 +8,15 @@
 	const sessionState = getSessionState();
 	const tabState = getTabState();
 
+	async function handleGistLoad(url: string) {
+		const sessions = await sessionState.loadFromGist(url);
+		if (sessions.length > 0) {
+			// Open first loaded session in current tab
+			const first = sessions[0];
+			tabState.updateTab(tabState.activeTabId, { sessionId: first.id, label: first.name });
+		}
+	}
+
 	function handleSelect(id: string) {
 		const session = sessionState.getSession(id);
 		if (!session) return;
@@ -58,6 +67,9 @@
 			onUpdateTab={tabState.updateTab}
 			getSession={sessionState.getSession}
 			parseSessionById={sessionState.parseSessionById}
+			onGistLoad={handleGistLoad}
+			gistLoading={sessionState.gistLoading}
+			gistError={sessionState.gistError}
 		/>
 	</div>
 </div>
