@@ -51,7 +51,7 @@
 	});
 </script>
 
-<div class="rounded-lg bg-surface-card/60 overflow-hidden">
+<div class="rounded-lg bg-surface-card/60 overflow-hidden opacity-70 hover:opacity-100 transition-opacity">
 	<!-- Header bar — always visible -->
 	<button
 		class="flex items-center gap-2 w-full text-left px-3 py-2 text-xs hover:bg-surface-hover/50 transition-colors cursor-pointer"
