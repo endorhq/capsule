@@ -9,12 +9,13 @@
 		selectedId: string | null;
 		count: number;
 		loading?: boolean;
-		onSelect: (id: string) => void;
+		onSelect: (id: string, openInNewTab: boolean) => void;
 		onUpload: (file: File) => void;
 		onClearAll: () => void;
+		onRemove: (id: string) => void;
 	}
 
-	let { sessions, selectedId, count, loading = false, onSelect, onUpload, onClearAll }: Props = $props();
+	let { sessions, selectedId, count, loading = false, onSelect, onUpload, onClearAll, onRemove }: Props = $props();
 
 	let fileInput: HTMLInputElement;
 	let showLogsModal = $state(false);
@@ -26,6 +27,11 @@
 			onUpload(file);
 			input.value = '';
 		}
+	}
+
+	function handleSelect(id: string, event?: MouseEvent) {
+		const openInNewTab = event?.metaKey || event?.ctrlKey || false;
+		onSelect(id, openInNewTab);
 	}
 </script>
 
@@ -66,7 +72,7 @@
 				<span class="text-xs">loading sessions...</span>
 			</div>
 		{:else}
-			<SessionList {sessions} {selectedId} {onSelect} />
+			<SessionList {sessions} {selectedId} onSelect={handleSelect} {onRemove} />
 		{/if}
 	</div>
 

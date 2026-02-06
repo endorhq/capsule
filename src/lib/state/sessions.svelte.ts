@@ -38,12 +38,43 @@ async function initialize() {
 	}
 }
 
-async function upload(file: File) {
+async function upload(file: File): Promise<SessionMeta> {
 	const meta = await storeSession(file);
 	sessions.push(meta);
 	sortSessions();
-	selectedId = meta.id;
-	await parseSelected(meta);
+	return meta;
+}
+
+function getSession(id: string): SessionMeta | undefined {
+	return sessions.find((s) => s.id === id);
+}
+
+async function parseSessionById(id: string): Promise<ParsedSession> {
+	// Check cache first
+	const cached = parseCache.get(id);
+	if (cached) {
+		return cached;
+	}
+
+	const meta = sessions.find((s) => s.id === id);
+	if (!meta) {
+		throw new Error('Session not found');
+	}
+
+	const raw = await readSessionFile(meta.id);
+	if (!raw) {
+		throw new Error('Session file not found');
+	}
+
+	const result = parseSession(raw, meta.format, meta.agentFormat);
+	parseCache.set(meta.id, result);
+
+	// Update agentFormat on meta if not set
+	if (!meta.agentFormat) {
+		meta.agentFormat = result.format;
+	}
+
+	return result;
 }
 
 async function parseSelected(meta: SessionMeta) {
@@ -147,6 +178,8 @@ export function getSessionState() {
 		select,
 		deselect,
 		remove,
-		clearAll
+		clearAll,
+		getSession,
+		parseSessionById
 	};
 }

@@ -4,10 +4,13 @@
 	interface Props {
 		session: SessionMeta;
 		isSelected: boolean;
-		onSelect: (id: string) => void;
+		onSelect: (id: string, event?: MouseEvent) => void;
+		onRemove: (id: string) => void;
 	}
 
-	let { session, isSelected, onSelect }: Props = $props();
+	let { session, isSelected, onSelect, onRemove }: Props = $props();
+
+	let isHovered = $state(false);
 
 	function formatRelativeTime(ts: number): string {
 		const diff = Date.now() - ts;
@@ -29,22 +32,45 @@
 	});
 
 	const formatLabel = $derived(session.agentFormat && session.agentFormat !== 'unknown' ? session.agentFormat : null);
+
+	function handleClick(e: MouseEvent) {
+		onSelect(session.id, e);
+	}
+
+	function handleRemove(e: MouseEvent) {
+		e.stopPropagation();
+		onRemove(session.id);
+	}
 </script>
 
 <button
-	class="w-full text-left px-3 py-2.5 rounded transition-colors cursor-pointer {isSelected
+	class="group w-full text-left px-3 py-2.5 rounded transition-colors cursor-pointer {isSelected
 		? 'bg-surface-selected'
 		: 'hover:bg-surface-hover'}"
-	onclick={() => onSelect(session.id)}
-	title={session.name}
+	onclick={handleClick}
+	onmouseenter={() => (isHovered = true)}
+	onmouseleave={() => (isHovered = false)}
+	title={session.name + '\nCtrl+click to open in new tab'}
 >
 	<div class="flex items-center gap-2">
 		<span
 			class="w-2 h-2 rounded-full shrink-0 {isSelected ? 'bg-accent' : 'bg-muted'}"
 		></span>
-		<span class="text-sm {isSelected ? 'text-foreground-bright' : 'text-foreground'} truncate">
+		<span class="text-sm {isSelected ? 'text-foreground-bright' : 'text-foreground'} truncate flex-1">
 			{displayName}/
 		</span>
+		{#if isHovered}
+			<span
+				role="button"
+				tabindex="0"
+				class="w-5 h-5 flex items-center justify-center rounded text-muted hover:text-status-error hover:bg-surface-selected transition-colors cursor-pointer"
+				onclick={handleRemove}
+				onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleRemove(e as unknown as MouseEvent); }}
+				title="Delete session"
+			>
+				×
+			</span>
+		{/if}
 	</div>
 	<div class="flex items-center justify-between text-xs text-muted ml-4 mt-0.5">
 		<span>{session.stepCount} steps</span>
