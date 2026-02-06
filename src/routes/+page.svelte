@@ -70,6 +70,7 @@
 			onGistLoad={handleGistLoad}
 			gistLoading={sessionState.gistLoading}
 			gistError={sessionState.gistError}
+			onDelete={handleRemove}
 		/>
 	</div>
 </div>

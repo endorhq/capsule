@@ -25,6 +25,7 @@
 		onGistLoad?: (url: string) => Promise<void>;
 		gistLoading?: boolean;
 		gistError?: string | null;
+		onDelete: (id: string) => void;
 	}
 
 	let {
@@ -39,7 +40,8 @@
 		parseSessionById,
 		onGistLoad,
 		gistLoading = false,
-		gistError = null
+		gistError = null,
+		onDelete
 	}: Props = $props();
 
 	// Per-tab parsing state
@@ -101,7 +103,7 @@
 
 	<div class="flex-1 overflow-hidden {activeMeta && activeParseState.parsedSession ? 'flex' : ''}">
 		{#if activeMeta && activeParseState.parsedSession}
-			<SessionViewer session={activeParseState.parsedSession} meta={activeMeta} />
+			<SessionViewer session={activeParseState.parsedSession} meta={activeMeta} {onDelete} />
 		{:else if activeMeta && activeParseState.parsing}
 			<div class="flex items-center justify-center h-full text-muted text-sm">
 				<span>// parsing {activeMeta.name}/...</span>
@@ -116,6 +118,19 @@
 		{:else if activeSessionId && !activeMeta}
 			<div class="flex items-center justify-center h-full text-muted text-sm">
 				<span>// session not found</span>
+			</div>
+		{:else if gistLoading && !activeSessionId}
+			<div class="flex items-center justify-center h-full">
+				<div class="flex flex-col items-center gap-4 text-center">
+					<svg class="w-8 h-8 text-accent animate-spin" viewBox="0 0 24 24" fill="none">
+						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+						<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+					</svg>
+					<div class="space-y-1">
+						<p class="text-foreground-bright text-sm font-medium">loading session from gist...</p>
+						<p class="text-muted text-xs">fetching and parsing log file</p>
+					</div>
+				</div>
 			</div>
 		{:else}
 			<UploadZone onUpload={handleUpload} {onGistLoad} {gistLoading} {gistError} />

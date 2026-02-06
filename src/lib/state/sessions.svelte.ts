@@ -191,6 +191,10 @@ async function loadFromGist(gistInput: string): Promise<SessionMeta[]> {
 	}
 }
 
+function setGistLoading(value: boolean) {
+	gistLoading = value;
+}
+
 export function getSessionState() {
 	return {
 		get sessions() {
@@ -231,6 +235,7 @@ export function getSessionState() {
 		clearAll,
 		getSession,
 		parseSessionById,
-		loadFromGist
+		loadFromGist,
+		setGistLoading
 	};
 }

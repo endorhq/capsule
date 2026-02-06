@@ -18,6 +18,7 @@
 
 		// Check for ?gist= query parameter
 		const gistParam = $page.url.searchParams.get('gist');
+
 		if (gistParam) {
 			try {
 				const sessions = await sessionState.loadFromGist(gistParam);

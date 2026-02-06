@@ -8,9 +8,10 @@
 	interface Props {
 		session: ParsedSession;
 		meta: SessionMeta;
+		onDelete: (id: string) => void;
 	}
 
-	let { session, meta }: Props = $props();
+	let { session, meta, onDelete }: Props = $props();
 
 	let filterText = $state('');
 
@@ -47,5 +48,5 @@
 	</div>
 
 	<!-- Right: session panel -->
-	<SessionPanel {session} {meta} />
+	<SessionPanel {session} {meta} {onDelete} />
 </div>

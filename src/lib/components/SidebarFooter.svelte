@@ -1,9 +1,26 @@
 <script lang="ts">
+	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
+
 	interface Props {
 		onClearAll: () => void;
 	}
 
 	let { onClearAll }: Props = $props();
+
+	let showClearConfirm = $state(false);
+
+	function handleClearClick() {
+		showClearConfirm = true;
+	}
+
+	function handleConfirmClear() {
+		showClearConfirm = false;
+		onClearAll();
+	}
+
+	function handleCancelClear() {
+		showClearConfirm = false;
+	}
 </script>
 
 <div class="border-t border-edge px-3 py-3 space-y-3">
@@ -25,7 +42,7 @@
 	</div>
 	<button
 		class="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs text-muted border border-edge rounded hover:text-red-400 hover:border-red-400/50 transition-colors cursor-pointer"
-		onclick={onClearAll}
+		onclick={handleClearClick}
 	>
 		<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
 			<path
@@ -37,3 +54,14 @@
 		clear local data
 	</button>
 </div>
+
+<ConfirmationModal
+	open={showClearConfirm}
+	title="clear all local data"
+	message="Are you sure you want to clear all local sessions? This action cannot be undone."
+	confirmLabel="Clear All"
+	cancelLabel="Cancel"
+	variant="danger"
+	onConfirm={handleConfirmClear}
+	onCancel={handleCancelClear}
+/>
