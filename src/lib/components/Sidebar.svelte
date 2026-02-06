@@ -9,7 +9,7 @@
 		selectedId: string | null;
 		count: number;
 		loading?: boolean;
-		onSelect: (id: string, openInNewTab: boolean) => void;
+		onSelect: (id: string) => void;
 		onUpload: (file: File) => void;
 		onClearAll: () => void;
 		onRemove: (id: string) => void;
@@ -27,11 +27,6 @@
 			onUpload(file);
 			input.value = '';
 		}
-	}
-
-	function handleSelect(id: string, event?: MouseEvent) {
-		const openInNewTab = event?.metaKey || event?.ctrlKey || false;
-		onSelect(id, openInNewTab);
 	}
 </script>
 
@@ -72,7 +67,7 @@
 				<span class="text-xs">loading sessions...</span>
 			</div>
 		{:else}
-			<SessionList {sessions} {selectedId} onSelect={handleSelect} {onRemove} />
+			<SessionList {sessions} {selectedId} {onSelect} {onRemove} />
 		{/if}
 	</div>
 

@@ -8,15 +8,25 @@
 	const sessionState = getSessionState();
 	const tabState = getTabState();
 
-	function handleSelect(id: string, openInNewTab: boolean = false) {
+	function handleSelect(id: string) {
 		const session = sessionState.getSession(id);
 		if (!session) return;
 
-		if (openInNewTab) {
-			tabState.openTab(id, session.name);
-		} else {
-			tabState.updateTab(tabState.activeTabId, { sessionId: id, label: session.name });
+		// If session is already open in a tab, focus that tab
+		const existingTab = tabState.findTabBySessionId(id);
+		if (existingTab) {
+			tabState.activateTab(existingTab.id);
+			return;
 		}
+
+		// Otherwise, open in a new tab
+		tabState.openTab(id, session.name);
+	}
+
+	async function handleSidebarUpload(file: File) {
+		const meta = await sessionState.upload(file);
+		// Open the uploaded session in a new tab
+		tabState.openTab(meta.id, meta.name);
 	}
 
 	async function handleRemove(id: string) {
@@ -34,7 +44,7 @@
 			count={sessionState.count}
 			loading={sessionState.loading}
 			onSelect={handleSelect}
-			onUpload={sessionState.upload}
+			onUpload={handleSidebarUpload}
 			onClearAll={sessionState.clearAll}
 			onRemove={handleRemove}
 		/>

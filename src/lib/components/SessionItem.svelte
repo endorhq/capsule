@@ -4,7 +4,7 @@
 	interface Props {
 		session: SessionMeta;
 		isSelected: boolean;
-		onSelect: (id: string, event?: MouseEvent) => void;
+		onSelect: (id: string) => void;
 		onRemove: (id: string) => void;
 	}
 
@@ -33,10 +33,6 @@
 
 	const formatLabel = $derived(session.agentFormat && session.agentFormat !== 'unknown' ? session.agentFormat : null);
 
-	function handleClick(e: MouseEvent) {
-		onSelect(session.id, e);
-	}
-
 	function handleRemove(e: MouseEvent) {
 		e.stopPropagation();
 		onRemove(session.id);
@@ -47,10 +43,10 @@
 	class="group w-full text-left px-3 py-2.5 rounded transition-colors cursor-pointer {isSelected
 		? 'bg-surface-selected'
 		: 'hover:bg-surface-hover'}"
-	onclick={handleClick}
+	onclick={() => onSelect(session.id)}
 	onmouseenter={() => (isHovered = true)}
 	onmouseleave={() => (isHovered = false)}
-	title={session.name + '\nCtrl+click to open in new tab'}
+	title={session.name}
 >
 	<div class="flex items-center gap-2">
 		<span

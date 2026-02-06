@@ -134,6 +134,10 @@ function closeTabsForSession(sessionId: string) {
 	}
 }
 
+function findTabBySessionId(sessionId: string): Tab | undefined {
+	return tabs.find((t) => t.sessionId === sessionId);
+}
+
 export function getTabState() {
 	return {
 		get tabs() {
@@ -154,6 +158,7 @@ export function getTabState() {
 		activateTab,
 		updateTab,
 		closeTabsForSession,
+		findTabBySessionId,
 		persist
 	};
 }

@@ -5,7 +5,7 @@
 	interface Props {
 		sessions: SessionMeta[];
 		selectedId: string | null;
-		onSelect: (id: string, event?: MouseEvent) => void;
+		onSelect: (id: string) => void;
 		onRemove: (id: string) => void;
 	}
 
