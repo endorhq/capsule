@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LogsLocationModal from './LogsLocationModal.svelte';
+
 	interface Props {
 		onUpload: (file: File) => void;
 	}
@@ -7,6 +9,7 @@
 
 	let dragCounter = $state(0);
 	let fileInput: HTMLInputElement;
+	let showLogsModal = $state(false);
 
 	const isDragging = $derived(dragCounter > 0);
 
@@ -107,6 +110,12 @@
 			onchange={handleFileChange}
 		/>
 	</div>
-
-	<p class="text-muted/50 text-xs mt-6">waiting for input...</p>
+	<button
+		class="text-xs text-muted hover:text-accent transition-colors cursor-pointer mt-3"
+		onclick={() => (showLogsModal = true)}
+	>
+		? where can I find my session logs?
+	</button>
 </div>
+
+<LogsLocationModal open={showLogsModal} onClose={() => (showLogsModal = false)} />
