@@ -64,30 +64,33 @@
 
 		<div class="flex flex-col flex-1 overflow-hidden">
 			<!-- Main conversation — always rendered, dimmed when subagent is open -->
-			<div class="flex flex-col flex-1 overflow-hidden min-h-0 transition-opacity {selectedSubagent ? 'opacity-90' : ''}">
+			<div class="flex flex-col flex-1 overflow-hidden min-h-0 transition-opacity {selectedSubagent ? 'opacity-80' : ''}">
 				<MessageThread timeline={filteredTimeline} onSubagentSelect={handleSubagentSelect} activeSubagentId={selectedSubagent?.id ?? null} />
 			</div>
 
 			{#if selectedSubagent}
-				<!-- Divider bar with subagent info -->
-				<div class="flex items-center gap-2 px-4 py-2 border-y border-accent/30 bg-accent/5 shrink-0">
-					<span class="text-accent text-xs font-medium">[>]</span>
-					<span class="text-accent text-xs font-medium">subagent</span>
-					<span class="text-foreground-bright text-xs font-medium">{selectedSubagent.description || selectedSubagent.subagentType}</span>
-					{#if selectedSubagent.model}
-						<span class="text-muted text-xs">// {selectedSubagent.model.split('/').pop()}</span>
-					{/if}
-					<button
-						class="ml-auto text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
-						onclick={closeSubagent}
-					>
-						[close]
-					</button>
-				</div>
+				<!-- Subagent block with teal glow -->
+				<div class="flex flex-col flex-1 overflow-hidden min-h-0 shadow-[0_-4px_20px_rgba(45,212,191,0.15),0_0_40px_rgba(45,212,191,0.08)]">
+					<!-- Divider bar with subagent info -->
+					<div class="flex items-center gap-2 px-4 py-2 border-y border-accent/30 bg-accent/5 shrink-0">
+						<span class="text-accent text-xs font-medium">[>]</span>
+						<span class="text-accent text-xs font-medium">subagent</span>
+						<span class="text-foreground-bright text-xs font-medium">{selectedSubagent.description || selectedSubagent.subagentType}</span>
+						{#if selectedSubagent.model}
+							<span class="text-muted text-xs">// {selectedSubagent.model.split('/').pop()}</span>
+						{/if}
+						<button
+							class="ml-auto text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
+							onclick={closeSubagent}
+						>
+							[close]
+						</button>
+					</div>
 
-				<!-- Bottom: subagent conversation -->
-				<div class="flex flex-col flex-1 overflow-hidden min-h-0">
-					<MessageThread timeline={selectedSubagent.timeline} userLabel={agentName} endMessage={selectedSubagent.result} />
+					<!-- Bottom: subagent conversation -->
+					<div class="flex flex-col flex-1 overflow-hidden min-h-0">
+						<MessageThread timeline={selectedSubagent.timeline} userLabel={agentName} endMessage={selectedSubagent.result} />
+					</div>
 				</div>
 			{/if}
 		</div>
