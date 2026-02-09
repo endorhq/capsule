@@ -77,7 +77,23 @@ export interface SystemEntry {
 	content: string;
 }
 
-export type TimelineEntry = UserEntry | AssistantEntry | ToolCallEntry | SystemEntry;
+export interface SubagentEntry {
+	type: 'subagent';
+	id: string;
+	timestamp: Date;
+	agentId: string;
+	parentToolUseId: string;
+	description: string;
+	prompt: string;
+	subagentType: string;
+	model?: string;
+	status: 'success' | 'error' | 'pending' | 'aborted';
+	result?: string;
+	timeline: TimelineEntry[];
+	tokens?: TokenUsage;
+}
+
+export type TimelineEntry = UserEntry | AssistantEntry | ToolCallEntry | SystemEntry | SubagentEntry;
 
 export interface ParsedSession {
 	format: AgentFormat;

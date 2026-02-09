@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ParsedSession, TimelineEntry } from '$lib/types/timeline';
+	import type { ParsedSession, TimelineEntry, SubagentEntry as SubagentType } from '$lib/types/timeline';
 	import type { SessionMeta } from '$lib/types';
 	import FilterBar from './FilterBar.svelte';
 	import MessageThread from './MessageThread.svelte';
@@ -14,6 +14,7 @@
 	let { session, meta, onDelete }: Props = $props();
 
 	let filterText = $state('');
+	let selectedSubagent = $state<SubagentType | null>(null);
 
 	const filteredTimeline = $derived.by((): TimelineEntry[] => {
 		if (!filterText.trim()) return session.timeline;
@@ -31,6 +32,12 @@
 						(entry.displayName?.toLowerCase().includes(query) ?? false) ||
 						(entry.result?.toLowerCase().includes(query) ?? false) ||
 						(entry.summary?.toLowerCase().includes(query) ?? false);
+				case 'subagent':
+					return entry.description.toLowerCase().includes(query) ||
+						entry.agentId.toLowerCase().includes(query) ||
+						entry.subagentType.toLowerCase().includes(query) ||
+						entry.prompt.toLowerCase().includes(query) ||
+						(entry.result?.toLowerCase().includes(query) ?? false);
 				case 'system':
 					return entry.content.toLowerCase().includes(query);
 				default:
@@ -38,13 +45,52 @@
 			}
 		});
 	});
+
+	function handleSubagentSelect(entry: SubagentType) {
+		selectedSubagent = entry;
+	}
+
+	function closeSubagent() {
+		selectedSubagent = null;
+	}
+
+	const agentName = $derived(session.context.agentName.replace('-code', ''));
 </script>
 
 <div class="flex flex-1 overflow-hidden">
 	<!-- Center: message thread -->
 	<div class="flex flex-col flex-1 overflow-hidden">
 		<FilterBar bind:value={filterText} />
-		<MessageThread timeline={filteredTimeline} />
+
+		<div class="flex flex-col flex-1 overflow-hidden">
+			<!-- Main conversation — always rendered, dimmed when subagent is open -->
+			<div class="flex flex-col flex-1 overflow-hidden min-h-0 transition-opacity {selectedSubagent ? 'opacity-90' : ''}">
+				<MessageThread timeline={filteredTimeline} onSubagentSelect={handleSubagentSelect} activeSubagentId={selectedSubagent?.id ?? null} />
+			</div>
+
+			{#if selectedSubagent}
+				<!-- Divider bar with subagent info -->
+				<div class="flex items-center gap-2 px-4 py-2 border-y border-accent/30 bg-accent/5 shrink-0">
+					<span class="text-accent text-xs font-medium">[>]</span>
+					<span class="text-accent text-xs font-medium">subagent</span>
+					<span class="text-foreground-bright text-xs font-medium">{selectedSubagent.description || selectedSubagent.subagentType}</span>
+					{#if selectedSubagent.model}
+						<span class="text-muted text-xs">// {selectedSubagent.model.split('/').pop()}</span>
+					{/if}
+					<button
+						class="ml-auto text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
+						onclick={closeSubagent}
+					>
+						[close]
+					</button>
+				</div>
+
+				<!-- Bottom: subagent conversation -->
+				<div class="flex flex-col flex-1 overflow-hidden min-h-0">
+					<MessageThread timeline={selectedSubagent.timeline} userLabel={agentName} endMessage={selectedSubagent.result} />
+				</div>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Right: session panel -->

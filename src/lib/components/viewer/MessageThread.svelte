@@ -1,17 +1,29 @@
 <script lang="ts">
-	import type { TimelineEntry } from '$lib/types/timeline';
+	import type { TimelineEntry, SubagentEntry as SubagentType } from '$lib/types/timeline';
 	import UserMessage from './entries/UserMessage.svelte';
 	import AssistantMessage from './entries/AssistantMessage.svelte';
 	import ToolCallEntry from './entries/ToolCallEntry.svelte';
+	import SubagentEntry from './entries/SubagentEntry.svelte';
 	import SystemMessage from './entries/SystemMessage.svelte';
 
 	interface Props {
 		timeline: TimelineEntry[];
+		onSubagentSelect?: (entry: SubagentType) => void;
+		activeSubagentId?: string | null;
+		userLabel?: string;
+		endMessage?: string;
 	}
 
-	let { timeline }: Props = $props();
+	let { timeline, onSubagentSelect, activeSubagentId = null, userLabel, endMessage }: Props = $props();
 
-	// Group consecutive tool_call and system entries together so they
+	let showFullEnd = $state(false);
+	const endPreview = $derived(
+		endMessage && endMessage.length > 800 && !showFullEnd
+			? endMessage.slice(0, 800)
+			: endMessage
+	);
+
+	// Group consecutive tool_call, subagent, and system entries together so they
 	// render as a visually nested block between messages.
 	interface MessageGroup {
 		type: 'message';
@@ -35,7 +47,7 @@
 		}
 
 		for (const entry of timeline) {
-			if (entry.type === 'tool_call' || entry.type === 'system') {
+			if (entry.type === 'tool_call' || entry.type === 'system' || entry.type === 'subagent') {
 				pendingTools.push(entry);
 			} else {
 				flushTools();
@@ -53,7 +65,7 @@
 		{#each groups as group, i (group.type === 'message' ? group.entry.id : group.entries[0].id)}
 			{#if group.type === 'message'}
 				{#if group.entry.type === 'user'}
-					<UserMessage entry={group.entry} />
+					<UserMessage entry={group.entry} label={userLabel || 'user'} />
 				{:else if group.entry.type === 'assistant'}
 					<AssistantMessage entry={group.entry} />
 				{/if}
@@ -63,6 +75,8 @@
 					{#each group.entries as entry (entry.id)}
 						{#if entry.type === 'tool_call'}
 							<ToolCallEntry {entry} />
+						{:else if entry.type === 'subagent'}
+							<SubagentEntry {entry} onSelect={onSubagentSelect} isActive={activeSubagentId === entry.id} />
 						{:else if entry.type === 'system'}
 							<SystemMessage {entry} />
 						{/if}
@@ -70,6 +84,26 @@
 				</div>
 			{/if}
 		{/each}
+
+		{#if endMessage}
+			<!-- Subagent result message -->
+			<div class="px-4 pt-3">
+				<div class="flex items-center gap-2 mb-3">
+					<span class="inline-block px-2 py-0.5 text-xs bg-accent/15 text-accent rounded font-medium">
+						subagent result
+					</span>
+				</div>
+				<pre class="text-sm text-foreground/80 whitespace-pre-wrap break-words leading-relaxed">{endPreview}</pre>
+				{#if endMessage.length > 800 && !showFullEnd}
+					<button
+						class="text-accent text-xs mt-1 hover:underline"
+						onclick={() => (showFullEnd = true)}
+					>
+						show more ({Math.round(endMessage.length / 1000)}k chars)
+					</button>
+				{/if}
+			</div>
+		{/if}
 
 		<!-- End of session marker -->
 		<div class="flex flex-col items-center py-8 select-none" aria-hidden="true">
@@ -80,7 +114,7 @@
       \__/   .
       /||\
   ~~~'~~~~'~~~</pre>
-			<span class="text-xs text-muted/50 mt-3">// end of session</span>
+			<span class="text-xs text-muted/50 mt-3">// end of {endMessage ? 'subagent' : 'session'}</span>
 		</div>
 	</div>
 </div>
