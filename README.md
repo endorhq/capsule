@@ -1,101 +1,119 @@
-# Logs
+<div align="center">
+  <h1>Capsule</h1>
 
-A session log viewer for AI coding agents. Upload conversation logs from Claude Code, Codex, Copilot, or Gemini and explore them in a unified timeline with a terminal-inspired dark UI.
+<a href="https://endor.dev"><img alt="Made by Endor" src="https://img.shields.io/badge/Made%20by%20Endor-107e7a.svg?style=for-the-badge&labelColor=000"></a>
+<a href="https://www.npmjs.com/package/@endorhq/capsule"><img alt="NPM version" src="https://img.shields.io/npm/v/%40endorhq%2Fcapsule?style=for-the-badge&color=2dd4bf&labelColor=000"></a>
+<a href="https://github.com/endorhq/capsule/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-2dd4bf.svg?style=for-the-badge&labelColor=000"></a>
 
-![SvelteKit](https://img.shields.io/badge/SvelteKit-2-ff3e00?logo=svelte)
-![Svelte](https://img.shields.io/badge/Svelte-5-ff3e00?logo=svelte)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06b6d4?logo=tailwindcss)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript)
+</div>
 
-## Features
+Capsule is an **interactive session viewer for AI coding agents**. It allows you to inspect previous session logs from Claude Code, Codex, Copilot, and Gemini into a unified timeline. Use it to **review what an agent did**, **check tool usage**, and **share sessions**.
 
-- **Multi-agent support** — Parse logs from Claude Code, Codex, Copilot, and Gemini into a single unified timeline
-- **Auto-detection** — Automatically identifies the agent format from uploaded files
-- **Three-panel layout** — Session list, message timeline, and session metadata side-by-side
-- **Tabbed sessions** — Open multiple sessions in tabs and switch between them
-- **Timeline filtering** — Search and filter messages within a session
-- **Tool call inspection** — Expandable tool call entries with arguments and results
-- **Extended thinking** — View thinking/reasoning blocks attached to assistant messages
-- **Token stats** — Input, output, cached, and reasoning token breakdowns
-- **File tracking** — See which files were read or edited during a session
-- **Gist sharing** — Import sessions from GitHub Gists or share your own
-- **Drag-and-drop upload** — Drop `.jsonl` or `.json` files anywhere to load them
-- **Offline storage** — Sessions are stored locally in OPFS, IndexedDB, or memory as a fallback
-- **Dark terminal aesthetic** — Monospace fonts, teal accents, and a `#0a0a0a` background
+![Capsule session viewer](https://github.com/user-attachments/assets/d0cb42ba-1ca6-4477-8355-6ddb7ef1cec8)
+
+You can use it online, or locally using our CLI.
+
+## Use Online
+
+Open **[capsule.endor.dev](https://capsule.endor.dev)** and drag-and-drop a session file. Everything stays in your browser — no data is sent to any server.
+
+## Install the CLI
+
+```sh
+npm install -g @endorhq/capsule@latest
+```
+
+The CLI gives you three commands: **share**, **export**, and **serve**.
+
+### Share a session
+
+Publish a session to a GitHub Gist and get a shareable viewer link on the **[capsule.endor.dev](https://capsule.endor.dev)** website:
+
+```sh
+capsule share
+```
+
+Capsule auto-discovers sessions from all supported agents on your machine. Pick one, choose what to anonymize, and get a link like `capsule.endor.dev?gist=abc123` you can send to your team.
+
+You can also point it at a specific file:
+
+```sh
+capsule share path/to/session.jsonl
+```
+
+> Requires the [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
+
+### Export a session
+
+Save an anonymized copy of a session to a local file:
+
+```sh
+capsule export
+```
+
+### Start a local viewer
+
+Run the web viewer locally on your machine:
+
+```sh
+capsule serve
+```
+
+This starts a local server at `http://localhost:3000` where you can upload and browse sessions. Use `--port` to change the port.
+
+## Why Capsule?
+
+AI coding agents generate rich conversation logs, but **reviewing them is harder than it should be**:
+
+- **Hard to find.** Session files are buried in dotfiles across `~/.claude/`, `~/.codex/`, `~/.gemini/`, and VS Code extension directories. Each agent stores them differently.
+- **Hard to read.** Raw `.jsonl` files are walls of JSON. Thousands of lines with nested tool calls, token metadata, and base64 content mixed in. Not something you open in a text editor.
+- **Not interactive.** There's no way to filter, search, or collapse sections. You're scrolling through everything to find the one tool call that went wrong.
+- **Hard to share.** When something interesting (or broken) happens in a session, sharing it with your team means sending a raw file and hoping they can make sense of it.
+
+Capsule solves this by giving you a single viewer that works with every major agent format. Upload a file or let the CLI find your sessions automatically. Browse the timeline, inspect tool calls, check token usage, and share a link when you need a second pair of eyes.
 
 ## Supported Formats
 
-| Agent | File Format | Status |
-|-------|-------------|--------|
-| Claude Code | `.jsonl` | Supported |
-| Codex (OpenAI) | `.jsonl` | Supported |
-| Copilot (GitHub) | `.jsonl` | Supported |
-| Gemini (Google) | `.json` | Supported |
-| OpenCode | directory | Not yet implemented |
+| Agent | File Format | Discovery Path |
+|-------|-------------|----------------|
+| Claude Code | `.jsonl` | `~/.claude/projects/` |
+| Codex (OpenAI) | `.jsonl` | `~/.codex/sessions/` |
+| Copilot (GitHub) | `.jsonl` | `~/.copilot/session-state/` |
+| Gemini (Google) | `.json` | `~/.gemini/tmp/` |
 
-## Getting Started
+Format is auto-detected from file content. The CLI discovers sessions from all agents automatically.
 
-### Prerequisites
+## Features
 
-- [Node.js](https://nodejs.org/) 20+
-- [pnpm](https://pnpm.io/)
+- **Unified timeline** — Messages, tool calls, and results in a single chronological view
+- **Tool call inspection** — Expandable entries showing arguments and results
+- **Extended thinking** — View reasoning/thinking blocks attached to assistant messages
+- **Token breakdown** — Input, output, cached, and reasoning tokens per message and per session
+- **File tracking** — See which files were read or edited during a session
+- **Session metadata** — Agent, model, directory, branch, duration, and cost
+- **Filtering** — Search and filter messages within a session
+- **Tabbed sessions** — Open multiple sessions and switch between them
+- **Gist import** — Open sessions directly from a GitHub Gist URL
+- **Offline storage** — Sessions stored locally in OPFS, IndexedDB, or memory
+- **Anonymization** — Selectively redact sensitive content before sharing or exporting
+- **Auto-discovery** — CLI finds sessions from all agents on your machine
 
-### Install
+## Local Development
 
 ```sh
 pnpm install
+pnpm dev        # Start dev server at localhost:5173
+pnpm build      # Build web app with adapter-node
 ```
-
-### Develop
-
-```sh
-pnpm dev
-```
-
-### Build
-
-```sh
-pnpm build
-pnpm preview
-```
-
-### Type Check
-
-```sh
-pnpm check
-```
-
-## Where to Find Agent Logs
-
-| Agent | Default Log Location |
-|-------|---------------------|
-| Claude Code | `~/.claude/projects/` — each project has `.jsonl` session files |
-| Codex | `~/.codex/sessions/` |
-| Copilot | VS Code output panel or `~/.vscode/extensions/github.copilot-*/` |
-| Gemini | `~/.gemini/logs/` |
-
-## Architecture
-
-```
-src/lib/
-  parsers/       Format-specific parsers + auto-detection
-  state/         Svelte 5 rune-based state (sessions, tabs)
-  services/      Storage (OPFS/IndexedDB), Gist integration, Markdown rendering
-  types/         ParsedSession, TimelineEntry, AgentFormat, Tab
-  components/    UI components
-    viewer/      Timeline, entries, filter bar, session panel
-```
-
-**Data flow:** Upload file -> detect format -> store in browser -> parse on select -> render timeline
-
-## Tech Stack
-
-- **SvelteKit 2** + **Svelte 5** (runes)
-- **TypeScript** (strict)
-- **Tailwind CSS v4**
-- **Vite 7**
-- **marked** + **DOMPurify** for Markdown rendering
 
 ## License
 
 [Apache 2.0](LICENSE)
+
+---
+
+<div align="center">
+
+**Built by the [Endor](https://endor.dev) team**
+
+</div>
