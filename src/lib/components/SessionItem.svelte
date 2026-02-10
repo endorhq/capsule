@@ -28,7 +28,7 @@ function formatRelativeTime(ts: number): string {
 const displayName = $derived.by((): string => {
   const name = session.name;
   if (name.length <= 24) return name;
-  return name.slice(0, 21) + '...';
+  return `${name.slice(0, 21)}...`;
 });
 
 const formatLabel = $derived(

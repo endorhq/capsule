@@ -103,7 +103,7 @@ async function peekLines(
 
 function truncate(s: string, max: number): string {
   if (s.length <= max) return s;
-  return s.slice(0, max - 1) + '\u2026';
+  return `${s.slice(0, max - 1)}\u2026`;
 }
 
 /**
@@ -144,7 +144,7 @@ async function peekClaudeSession(
           title = truncate(firstLine, 80);
         }
       } catch {
-        continue;
+        // skip unparseable line
       }
     }
 
@@ -208,7 +208,7 @@ async function peekCodexSession(
           }
         }
       } catch {
-        continue;
+        // skip unparseable line
       }
     }
 
@@ -267,7 +267,7 @@ async function peekCopilotSession(
           title = truncate(firstLine, 80);
         }
       } catch {
-        continue;
+        // skip unparseable line
       }
     }
 
@@ -308,7 +308,7 @@ async function peekGeminiSession(
     if (messages) {
       const firstUser = messages.find(m => m.type === 'user' && m.content);
       if (firstUser) {
-        const firstLine = firstUser.content!.trim().split('\n')[0].trim();
+        const firstLine = (firstUser.content as string).trim().split('\n')[0].trim();
         title = truncate(firstLine, 80);
       }
     }

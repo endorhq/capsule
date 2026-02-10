@@ -168,7 +168,7 @@ export function parseGeminiSession(content: string): ParsedSession {
         if (filePath) {
           const isWrite = toolName === 'replace' || toolName === 'write_file';
           const operation = isWrite ? 'edited' : 'read';
-          const fileKey = filePath + ':' + operation;
+          const fileKey = `${filePath}:${operation}`;
           if (!seenFiles.has(fileKey)) {
             seenFiles.add(fileKey);
             const isNew =

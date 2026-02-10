@@ -29,7 +29,7 @@ function handleKeydown(e: KeyboardEvent) {
 const displayLabel = $derived.by((): string => {
   const label = tab.label;
   if (label.length <= 18) return label;
-  return label.slice(0, 15) + '...';
+  return `${label.slice(0, 15)}...`;
 });
 </script>
 

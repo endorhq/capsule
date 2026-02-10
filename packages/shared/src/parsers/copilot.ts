@@ -5,7 +5,6 @@ import type {
   UserEntry,
   AssistantEntry,
   ToolCallEntry,
-  SystemEntry,
   FileEntry,
   ThinkingBlock,
   ToolResultMeta,
@@ -242,7 +241,7 @@ export function parseCopilotSession(content: string): ParsedSession {
         const filePath = (toolArgs.path as string) || '';
         if (filePath) {
           const operation = toolName === 'edit' ? 'edited' : 'read';
-          const fileKey = filePath + ':' + operation;
+          const fileKey = `${filePath}:${operation}`;
           if (!seenFiles.has(fileKey)) {
             seenFiles.add(fileKey);
             files.push({ path: filePath, operation });

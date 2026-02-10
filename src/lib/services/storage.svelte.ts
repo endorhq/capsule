@@ -14,7 +14,8 @@ const IDB_STORE = 'files';
 const MANIFEST_KEY = 'manifest.json';
 
 function sessionsDir(): Promise<FileSystemDirectoryHandle> {
-  return opfsRoot!.getDirectoryHandle('sessions', { create: true });
+  if (!opfsRoot) throw new Error('OPFS not initialized');
+  return opfsRoot.getDirectoryHandle('sessions', { create: true });
 }
 
 async function detectBackend(): Promise<Backend> {
@@ -83,9 +84,14 @@ async function opfsDeleteFile(name: string): Promise<void> {
 
 // --- IndexedDB helpers ---
 
+function getIdb(): IDBDatabase {
+  if (!idb) throw new Error('IndexedDB not initialized');
+  return idb;
+}
+
 function idbGet(key: string): Promise<string | null> {
   return new Promise((resolve, reject) => {
-    const tx = idb!.transaction(IDB_STORE, 'readonly');
+    const tx = getIdb().transaction(IDB_STORE, 'readonly');
     const req = tx.objectStore(IDB_STORE).get(key);
     req.onsuccess = () => resolve(req.result ?? null);
     req.onerror = () => reject(req.error);
@@ -94,7 +100,7 @@ function idbGet(key: string): Promise<string | null> {
 
 function idbPut(key: string, value: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const tx = idb!.transaction(IDB_STORE, 'readwrite');
+    const tx = getIdb().transaction(IDB_STORE, 'readwrite');
     const req = tx.objectStore(IDB_STORE).put(value, key);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
@@ -103,7 +109,7 @@ function idbPut(key: string, value: string): Promise<void> {
 
 function idbDelete(key: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const tx = idb!.transaction(IDB_STORE, 'readwrite');
+    const tx = getIdb().transaction(IDB_STORE, 'readwrite');
     const req = tx.objectStore(IDB_STORE).delete(key);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
@@ -112,7 +118,7 @@ function idbDelete(key: string): Promise<void> {
 
 function idbClear(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const tx = idb!.transaction(IDB_STORE, 'readwrite');
+    const tx = getIdb().transaction(IDB_STORE, 'readwrite');
     const req = tx.objectStore(IDB_STORE).clear();
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);

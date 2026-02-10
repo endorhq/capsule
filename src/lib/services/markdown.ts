@@ -78,8 +78,8 @@ export function renderMarkdown(content: string): string {
   });
 
   if (cache.size >= MAX_CACHE) {
-    const first = cache.keys().next().value!;
-    cache.delete(first);
+    const first = cache.keys().next().value;
+    if (first !== undefined) cache.delete(first);
   }
   cache.set(content, clean);
 

@@ -41,7 +41,7 @@ const outputPreview = $derived(
 const headerSummary = $derived.by((): string => {
   if (entry.name === 'exec_command' && entry.arguments.cmd) {
     const cmd = String(entry.arguments.cmd);
-    return cmd.length > 60 ? cmd.slice(0, 60) + '...' : cmd;
+    return cmd.length > 60 ? `${cmd.slice(0, 60)}...` : cmd;
   }
   if (entry.name === 'apply_patch' && meta?.files?.length) {
     return meta.files.join(', ');
