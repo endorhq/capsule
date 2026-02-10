@@ -1,6 +1,6 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { join, basename } from 'node:path';
 import { homedir } from 'node:os';
+import { basename, join } from 'node:path';
 import type { AgentFormat } from '@endorhq/capsule-shared/types/timeline';
 
 export interface AgentSource {
@@ -308,7 +308,10 @@ async function peekGeminiSession(
     if (messages) {
       const firstUser = messages.find(m => m.type === 'user' && m.content);
       if (firstUser) {
-        const firstLine = (firstUser.content as string).trim().split('\n')[0].trim();
+        const firstLine = (firstUser.content as string)
+          .trim()
+          .split('\n')[0]
+          .trim();
         title = truncate(firstLine, 80);
       }
     }
