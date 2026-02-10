@@ -2,11 +2,13 @@
 
 ## Project Overview
 
-**pnpm monorepo** with two packages and a root web app:
+**pnpm monorepo** with three workspace packages:
 
-1. **Root (`.`)** — SvelteKit web app that visualizes conversation logs from AI coding agents (Claude Code, Codex, Copilot, Gemini). Parses different log formats into a unified timeline and renders them in a terminal-inspired dark UI.
+1. **`@endorhq/capsule-web`** (`packages/web`) — SvelteKit web app that visualizes conversation logs from AI coding agents (Claude Code, Codex, Copilot, Gemini). Parses different log formats into a unified timeline and renders them in a terminal-inspired dark UI. Builds with adapter-node (default, for CLI consumption) or adapter-cloudflare (for production deploy).
 2. **`@endorhq/capsule-shared`** (`packages/shared`) — Shared parsers and types consumed by both the web app and the CLI.
-3. **`@endorhq/capsule`** (`packages/cli`) — CLI tool (`capsule`) for discovering local agent sessions, anonymizing sensitive data, and publishing them as GitHub Gists with a link to the web viewer at `https://capsule.endor.dev?gist=<ID>`.
+3. **`@endorhq/capsule`** (`packages/cli`) — CLI tool (`capsule`) with three subcommands: `share` (publish to GitHub Gist), `export` (save to local file), and `serve` (start a local web viewer).
+
+The root (`./`) is not a workspace package — it holds monorepo tooling only (biome, lefthook).
 
 ## Tech Stack
 
@@ -17,50 +19,74 @@
 - **pnpm** package manager (monorepo via `pnpm-workspace.yaml`)
 - **tsup** (CLI bundling) + **tsx** (CLI dev)
 - **@clack/prompts** + **picocolors** (CLI interactive UI)
+- **@sveltejs/adapter-node** (default build, for `capsule serve`)
+- **@sveltejs/adapter-cloudflare** (opt-in via `ADAPTER=cloudflare`, for production)
 
 ## Commands
 
-### Web App (root)
+### Web App (`packages/web`)
 
-- `pnpm dev` — Start dev server
-- `pnpm build` — Production build
-- `pnpm check` — Type-check (svelte-kit sync + svelte-check)
-- `pnpm preview` — Preview production build
+- `pnpm dev` — Start dev server (proxied from root)
+- `pnpm build` — Build with adapter-node + `PUBLIC_DISTRIBUTION=local` (proxied from root)
+- `pnpm -C packages/web build:cloudflare` — Build with adapter-cloudflare for production
+- `pnpm -C packages/web check` — Type-check (svelte-kit sync + svelte-check)
+- `pnpm -C packages/web preview` — Preview production build
 
 ### CLI (`packages/cli`)
 
-- `pnpm -C packages/cli dev` — Run CLI interactively via tsx
+- `capsule share [file]` — Publish a session to GitHub Gist
+- `capsule export [file]` — Save an anonymized session to a local file
+- `capsule serve [--port N]` — Start a local web viewer (default port 3000)
+- `capsule --help` — Print usage
+- `pnpm -C packages/cli dev` — Run CLI via tsx (use `npx tsx src/index.ts <command>` for subcommands)
 - `pnpm -C packages/cli build` — Bundle CLI to `dist/index.js`
+
+### Root
+
+- `pnpm dev` — Proxy to `pnpm -C packages/web dev`
+- `pnpm build` — Proxy to `pnpm -C packages/web build`
+- `pnpm lint` — Run biome lint
+- `pnpm format` — Run biome format
 
 ## Architecture
 
 ### Monorepo Layout
 
 ```
-.                        — Root: SvelteKit web app
+.                          — Root: monorepo tooling only
+wrangler.jsonc             — Cloudflare Workers config (at root for CF auto-detection)
 packages/
-  shared/                — @endorhq/capsule-shared: parsers + types
+  web/                     — @endorhq/capsule-web: SvelteKit app
     src/
-      parsers/           — claude.ts, codex.ts, copilot.ts, gemini.ts, detect.ts, index.ts
-      types/             — timeline.ts (ParsedSession, TimelineEntry, etc.)
-  cli/                   — @endorhq/capsule: CLI binary
+      lib/
+        features.ts        — Feature flag: isLocal / distribution
+        components/        — UI components
+          viewer/          — Session viewer (MessageThread, FilterBar, entries, panels)
+        parsers/           — Thin re-exports from @endorhq/capsule-shared
+        services/          — Browser storage (OPFS > IndexedDB > memory)
+        state/             — Svelte 5 rune-based state
+        types/             — Thin re-exports from @endorhq/capsule-shared
+      routes/              — SvelteKit routes (+page.svelte, +layout.svelte, layout.css)
+    svelte.config.js       — Conditional adapter (node default, cloudflare opt-in)
+    vite.config.ts         — Tailwind + SvelteKit plugins
+    .env                   — PUBLIC_DISTRIBUTION=public (default for dev)
+  shared/                  — @endorhq/capsule-shared: parsers + types
     src/
-      index.ts           — Entry point + interactive flow (@clack/prompts)
-      discovery.ts       — Find sessions on disk per agent
-      anonymize.ts       — Format-aware anonymization transforms
-      publish.ts         — Gist creation via gh CLI
-```
-
-### Web App Key Directories
-
-```
-src/lib/
-  parsers/       — Thin re-exports from @endorhq/capsule-shared
-  state/         — Svelte 5 rune-based state (sessions.svelte.ts)
-  services/      — Browser storage abstraction (OPFS > IndexedDB > memory fallback)
-  types/         — Thin re-export from @endorhq/capsule-shared
-  components/    — UI components
-    viewer/      — Session viewer (MessageThread, FilterBar, entry components, panel components)
+      parsers/             — claude.ts, codex.ts, copilot.ts, gemini.ts, detect.ts, index.ts
+      types/               — timeline.ts (ParsedSession, TimelineEntry, etc.)
+  cli/                     — @endorhq/capsule: CLI binary
+    src/
+      index.ts             — Subcommand router (share, export, serve)
+      commands/
+        share.ts           — capsule share: gh auth → session → anonymize → gist
+        export.ts          — capsule export: session → anonymize → save file
+        serve.ts           — capsule serve: import handler → http server
+      flows/
+        session.ts         — Shared: file arg OR discovery → { content, format }
+        anonymize-prompt.ts — Shared: multiselect with "Select all" + apply
+      discovery.ts         — Find sessions on disk per agent
+      anonymize.ts         — Format-aware anonymization transforms
+      publish.ts           — Gist creation + file save via gh CLI
 ```
 
 ### Web App Layout
@@ -75,12 +101,53 @@ Three-panel layout: sidebar (session list + upload) | center (message timeline +
 4. Parser returns a `ParsedSession` with a flat `TimelineEntry[]` timeline
 5. `SessionViewer.svelte` renders the timeline with filtering, grouping tool calls into nested blocks
 
-### CLI Flow (`capsule`)
+### CLI Subcommands
 
-1. Accepts optional file path argument, or discovers sessions from `~/.claude`, `~/.codex`, `~/.copilot`, `~/.gemini`
-2. User selects agent and session interactively
-3. User selects anonymization options (multiselect: remove tool outputs, mask paths, remove thinking, etc.)
-4. Outputs to GitHub Gist (via `gh`), local file, or stdout
+**`capsule share [file]`** — Check `gh` auth first (fail early), resolve session (file arg or interactive discovery), prompt anonymization, prompt gist visibility, publish gist, print viewer URL.
+
+**`capsule export [file]`** — Resolve session, prompt anonymization, prompt output path, save to disk.
+
+**`capsule serve [--port N]`** — Dynamically imports the pre-built adapter-node handler from `@endorhq/capsule-web/handler`, starts an HTTP server on localhost. The web package must be built first (`pnpm build`).
+
+### Feature Flag Mechanism
+
+`packages/web/src/lib/features.ts` exposes `isLocal` and `distribution` based on the compile-time `PUBLIC_DISTRIBUTION` env var:
+
+- **Node build** (`pnpm build`): `PUBLIC_DISTRIBUTION=local` is baked in → `isLocal === true`
+- **Cloudflare build** (`pnpm -C packages/web build:cloudflare`): reads `.env` default `public` → `isLocal === false`
+- **Dev server** (`pnpm dev`): reads `.env` default `public` → `isLocal === false`
+
+Components gate local-only features with:
+
+```svelte
+<script>
+  import { isLocal } from '$lib/features';
+</script>
+{#if isLocal}
+  <!-- local-only UI -->
+{/if}
+```
+
+### Adapter Selection
+
+`packages/web/svelte.config.js` uses a conditional dynamic import:
+
+- Default: `@sveltejs/adapter-node` (produces `build/handler.js`, `build/client/`, `build/server/`)
+- `ADAPTER=cloudflare`: `@sveltejs/adapter-cloudflare` (produces `.svelte-kit/cloudflare/`)
+
+### Build & Dependency Flow
+
+```
+@endorhq/capsule-shared (no build step, raw TS)
+       ↓                          ↓
+@endorhq/capsule-web        @endorhq/capsule (CLI)
+  (vite build → build/)          ↓
+       ↓                    depends on web
+  adapter-node output       imports handler at runtime
+  (handler.js, client/, server/)
+```
+
+The CLI declares `@endorhq/capsule-web` as a dependency but marks it as `external` in `tsup.config.ts` — the handler is dynamically imported at runtime, not bundled.
 
 ### Parser Pattern
 
@@ -97,11 +164,29 @@ Each parser (`packages/shared/src/parsers/<format>.ts`) follows the same shape:
 - `@endorhq/capsule-shared/parsers` — `parseSession()` + `detectFormat()`
 - `@endorhq/capsule-shared/parsers/*` — Individual parsers
 
-Web app files in `src/lib/parsers/` and `src/lib/types/` are thin re-exports from the shared package.
+Web app files in `packages/web/src/lib/parsers/` and `packages/web/src/lib/types/` are thin re-exports from the shared package.
 
 ### State Management
 
 Singleton via `getSessionState()` in `sessions.svelte.ts`. Uses Svelte 5 runes (`$state` for mutable data, `$derived` for computed values). Parsed sessions are cached in a non-reactive `Map`.
+
+## Deployment
+
+### Cloudflare Workers
+
+`wrangler.jsonc` lives at the repo root (Cloudflare auto-detects it there). It contains:
+- `build.command`: `ADAPTER=cloudflare pnpm -C packages/web build:cloudflare`
+- `main`: `packages/web/.svelte-kit/cloudflare/_worker.js`
+- `assets.directory`: `packages/web/.svelte-kit/cloudflare`
+- `vars.PUBLIC_DISTRIBUTION`: `public`
+
+Deploy with `wrangler deploy` from the repo root, or via Cloudflare's Git integration.
+
+### Local Development
+
+1. `pnpm dev` — starts vite dev server at localhost:5173
+2. `pnpm build` — builds web with adapter-node (PUBLIC_DISTRIBUTION=local)
+3. `capsule serve` — serves the built web app at localhost:3000 with `isLocal === true`
 
 ## Code Conventions
 
@@ -112,7 +197,7 @@ Singleton via `getSessionState()` in `sessions.svelte.ts`. Uses Svelte 5 runes (
 - Type imports: always use `import type { ... }`
 - Component names: PascalCase (e.g., `SessionItem.svelte`)
 - Functions: camelCase
-- No ESLint/Prettier configs — uses defaults from SvelteKit scaffolding
+- **Biome** for linting and formatting (no ESLint/Prettier)
 - No tests configured
 
 ## Theme
@@ -130,3 +215,5 @@ Dark terminal aesthetic using custom CSS tokens in `layout.css`:
 - OpenCode parser is not yet implemented (multi-file directory format)
 - No testing framework is set up
 - CLI discovers sessions from known agent log paths: `~/.claude/projects/`, `~/.codex/sessions/`, `~/.copilot/session-state/`, `~/.gemini/tmp/`
+- CLI anonymization includes a "Select all" option prepended to the multiselect
+- The web package must be built before `capsule serve` can work (it imports `@endorhq/capsule-web/handler` at runtime)
