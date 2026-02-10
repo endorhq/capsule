@@ -2,6 +2,7 @@
 import { getSessionState } from '$lib/state/sessions.svelte';
 import { getTabState } from '$lib/state/tabs.svelte';
 import Header from '$lib/components/Header.svelte';
+import Footer from '$lib/components/Footer.svelte';
 import Sidebar from '$lib/components/Sidebar.svelte';
 import MainContent from '$lib/components/MainContent.svelte';
 
@@ -76,4 +77,5 @@ async function handleRemove(id: string) {
 			onDelete={handleRemove}
 		/>
 	</div>
+	<Footer />
 </div>
