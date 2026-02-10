@@ -1,8 +1,13 @@
 {
-  "name": "logs",
+  "name": "@endorhq/capsule-root",
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "engines": {
+    "pnpm": ">=10",
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.25.0",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
