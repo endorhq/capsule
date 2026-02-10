@@ -1,11 +1,11 @@
 {
   "name": "capsule",
-  "main": ".svelte-kit/cloudflare/_worker.js",
+  "main": "packages/web/.svelte-kit/cloudflare/_worker.js",
   "compatibility_flags": ["nodejs_als"],
   "compatibility_date": "2026-02-09",
   "assets": {
     "binding": "ASSETS",
-    "directory": ".svelte-kit/cloudflare"
+    "directory": "packages/web/.svelte-kit/cloudflare"
   },
   "build": {
     "command": "ADAPTER=cloudflare pnpm build:cloudflare"
