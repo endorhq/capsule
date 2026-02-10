@@ -275,7 +275,7 @@ export function parseClaudeSession(content: string): ParsedSession {
       if (!agentId || !progressMessage) continue;
 
       const timestamp = new Date(entry.timestamp as string);
-      if (!isNaN(timestamp.getTime())) {
+      if (!Number.isNaN(timestamp.getTime())) {
         if (!startTime || timestamp < startTime) startTime = timestamp;
         if (!endTime || timestamp > endTime) endTime = timestamp;
       }
@@ -307,7 +307,8 @@ export function parseClaudeSession(content: string): ParsedSession {
         }
       }
 
-      const sub = pendingSubagents.get(agentId)!;
+      const sub = pendingSubagents.get(agentId);
+      if (!sub) continue;
       const msgType = progressMessage.type as string;
       const innerMessage = progressMessage.message as
         | Record<string, unknown>
@@ -362,7 +363,7 @@ export function parseClaudeSession(content: string): ParsedSession {
 
     const timestamp = new Date(entry.timestamp as string);
 
-    if (!isNaN(timestamp.getTime())) {
+    if (!Number.isNaN(timestamp.getTime())) {
       if (!startTime || timestamp < startTime) startTime = timestamp;
       if (!endTime || timestamp > endTime) endTime = timestamp;
     }
@@ -426,10 +427,10 @@ export function parseClaudeSession(content: string): ParsedSession {
 
           // Check if this is a Task tool result with a corresponding subagent
           if (buffered.name === 'Task' && taskToolToAgent.has(toolUseId)) {
-            const agentId = taskToolToAgent.get(toolUseId)!;
-            const sub = pendingSubagents.get(agentId);
+            const agentId = taskToolToAgent.get(toolUseId);
+            const sub = agentId ? pendingSubagents.get(agentId) : undefined;
 
-            if (sub) {
+            if (sub && agentId) {
               // Finalize any pending tool calls in the subagent
               for (const [, tc] of sub.pendingToolCalls) {
                 const abortedTool: ToolCallEntry = {
@@ -510,7 +511,7 @@ export function parseClaudeSession(content: string): ParsedSession {
           if (filePath) {
             const isWrite = toolName === 'Edit' || toolName === 'Write';
             const operation = isWrite ? 'edited' : 'read';
-            const fileKey = filePath + ':' + operation;
+            const fileKey = `${filePath}:${operation}`;
             if (!seenFiles.has(fileKey)) {
               seenFiles.add(fileKey);
               files.push({ path: filePath, operation });
@@ -519,7 +520,7 @@ export function parseClaudeSession(content: string): ParsedSession {
           // Also track files from Edit toolUseResult
           if (toolUseResult?.filePath) {
             const editPath = toolUseResult.filePath as string;
-            const fileKey = editPath + ':edited';
+            const fileKey = `${editPath}:edited`;
             if (!seenFiles.has(fileKey)) {
               seenFiles.add(fileKey);
               files.push({ path: editPath, operation: 'edited' });

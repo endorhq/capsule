@@ -26,8 +26,7 @@ function generateId(index: number): string {
 function extractFilesFromPatch(input: string): FileEntry[] {
   const files: FileEntry[] = [];
   const regex = /\*\*\* Update File: (.+)/g;
-  let match;
-  while ((match = regex.exec(input)) !== null) {
+  for (const match of input.matchAll(regex)) {
     const path = match[1].trim();
     files.push({ path, operation: 'edited' });
   }
@@ -332,8 +331,8 @@ export function parseCodexSession(content: string): ParsedSession {
             const patchInput = (payload.input as string) || '';
             const patchFiles = extractFilesFromPatch(patchInput);
             for (const f of patchFiles) {
-              if (!seenFiles.has(f.path + ':' + f.operation)) {
-                seenFiles.add(f.path + ':' + f.operation);
+              if (!seenFiles.has(`${f.path}:${f.operation}`)) {
+                seenFiles.add(`${f.path}:${f.operation}`);
                 files.push(f);
               }
             }
@@ -381,7 +380,7 @@ export function parseCodexSession(content: string): ParsedSession {
                 if (fileMatches) {
                   for (const m of fileMatches) {
                     const filePath = m.replace(/^M\s+/, '').trim();
-                    const key = filePath + ':edited';
+                    const key = `${filePath}:edited`;
                     if (!seenFiles.has(key)) {
                       seenFiles.add(key);
                       // Check if we already have this file

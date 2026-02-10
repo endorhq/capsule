@@ -12,7 +12,7 @@ import {
 } from './anonymize.js';
 import { checkGhAuth, publishGist, saveToFile } from './publish.js';
 import type { AgentFormat } from '@endorhq/capsule-shared/types/timeline';
-import type { DiscoveredSession } from './discovery.js';
+import type { AgentSource, DiscoveredSession } from './discovery.js';
 
 function formatDate(date: Date): string {
   const now = new Date();
@@ -38,7 +38,6 @@ function formatDate(date: Date): string {
 async function main() {
   p.intro(pc.bgCyan(pc.black(' capsule ')));
 
-  let filePath: string | undefined;
   let fileContent: string | undefined;
   let format: AgentFormat | undefined;
 
@@ -49,7 +48,6 @@ async function main() {
     try {
       const s = await stat(resolved);
       if (s.isFile()) {
-        filePath = resolved;
         fileContent = await readFile(resolved, 'utf-8');
         const ext = extname(resolved);
         const fileFormat = ext === '.json' ? 'json' : 'jsonl';
@@ -94,7 +92,7 @@ async function main() {
     }
 
     // Select agent source (skip if only one)
-    let selectedSource;
+    let selectedSource: AgentSource;
     if (sources.length === 1) {
       selectedSource = sources[0];
       p.log.info(
@@ -127,7 +125,7 @@ async function main() {
       options: sessions.slice(0, 50).map(s => ({
         value: s,
         label: s.title,
-        hint: `${formatDate(s.date)}${s.cwd ? ' \u2022 ' + pc.dim(s.cwd) : ''}`,
+        hint: `${formatDate(s.date)}${s.cwd ? ` \u2022 ${pc.dim(s.cwd)}` : ''}`,
       })),
     });
     if (p.isCancel(sessionChoice)) {
@@ -136,10 +134,14 @@ async function main() {
     }
 
     const selected = sessionChoice;
-    filePath = selected.filePath;
     format = selected.agent;
     fileContent = await readFile(selected.filePath, 'utf-8');
     p.log.info(`Session: ${pc.cyan(selected.title)} ${pc.dim(`(${format})`)}`);
+  }
+
+  if (!fileContent || !format) {
+    p.cancel('No session loaded.');
+    process.exit(1);
   }
 
   // Anonymization options
@@ -169,10 +171,10 @@ async function main() {
   if (hasOptions) {
     const spinner = p.spinner();
     spinner.start('Anonymizing session');
-    anonymized = anonymize(fileContent!, format!, options);
+    anonymized = anonymize(fileContent, format, options);
     spinner.stop('Session anonymized');
   } else {
-    anonymized = fileContent!;
+    anonymized = fileContent;
     p.log.info('No anonymization applied');
   }
 
@@ -198,7 +200,7 @@ async function main() {
     // Check gh auth
     const authCheck = await checkGhAuth();
     if (!authCheck.ok) {
-      p.log.error(authCheck.error!);
+      p.log.error(authCheck.error || 'Authentication failed');
       p.outro('Cannot publish without gh authentication.');
       process.exit(1);
     }
@@ -218,7 +220,7 @@ async function main() {
     const spinner = p.spinner();
     spinner.start('Creating gist');
     try {
-      const result = await publishGist(anonymized, format!, {
+      const result = await publishGist(anonymized, format, {
         public: visibility === 'public',
         description: `Agent session log (${format})`,
       });

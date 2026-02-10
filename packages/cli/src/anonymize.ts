@@ -1,4 +1,4 @@
-import { basename, extname } from 'node:path';
+import { extname } from 'node:path';
 import type { AgentFormat } from '@endorhq/capsule-shared/types/timeline';
 
 export interface AnonymizeOptions {
@@ -54,9 +54,8 @@ class PathMasker {
     if (!text) return text;
 
     // First pass: find and register all path-like strings
-    const pathRegex = /(?:\/[\w.@-]+){2,}|~\/[\w.@/-]+|[A-Z]:\\[\w.\\-]+/g;
-    let match;
-    while ((match = pathRegex.exec(text)) !== null) {
+    const pathRegex = /(?:\/[\w.@-]+){2,}|~\/[\w.@/-]+|[A-Z]:\\[-\w.\\]+/g;
+    for (const match of text.matchAll(pathRegex)) {
       this.mask(match[0]);
     }
 
@@ -497,7 +496,7 @@ function anonymizeGemini(
   content: string,
   options: AnonymizeOptions,
   pathMasker: PathMasker,
-  gitMasker: GitMasker
+  _gitMasker: GitMasker
 ): string {
   let root: Record<string, unknown>;
   try {
