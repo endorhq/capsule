@@ -1,11 +1,11 @@
 <script lang="ts">
 import './layout.css';
+import { onMount } from 'svelte';
+import { goto } from '$app/navigation';
+import { page } from '$app/stores';
 import favicon from '$lib/assets/favicon.svg';
 import { getSessionState } from '$lib/state/sessions.svelte';
 import { getTabState } from '$lib/state/tabs.svelte';
-import { page } from '$app/stores';
-import { goto } from '$app/navigation';
-import { onMount } from 'svelte';
 
 let { children } = $props();
 
@@ -38,15 +38,24 @@ onMount(async () => {
 
 <svelte:head>
   <title>Capsule — An interactive AI agent session inspector</title>
-  <meta name="description" content="Visualize and inspect conversation logs from AI coding agents like Claude Code, Codex, Copilot, and Gemini in a unified timeline." />
+  <meta
+    name="description"
+    content="Visualize and inspect conversation logs from AI coding agents like Claude Code, Codex, Copilot, and Gemini in a unified timeline."
+  />
   <meta name="theme-color" content="#0a0a0a" />
   <meta property="og:title" content="Capsule by Endor" />
-  <meta property="og:description" content="Visualize and inspect conversation logs from AI coding agents like Claude Code, Codex, Copilot, and Gemini." />
+  <meta
+    property="og:description"
+    content="Visualize and inspect conversation logs from AI coding agents like Claude Code, Codex, Copilot, and Gemini."
+  />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://capsule.endor.dev" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Capsule by Endor" />
-  <meta name="twitter:description" content="Visualize and inspect conversation logs from AI coding agents like Claude Code, Codex, Copilot, and Gemini." />
+  <meta
+    name="twitter:description"
+    content="Visualize and inspect conversation logs from AI coding agents like Claude Code, Codex, Copilot, and Gemini."
+  />
   <link rel="icon" href={favicon} />
 </svelte:head>
 {@render children()}

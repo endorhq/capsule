@@ -156,111 +156,145 @@ const currentAgentName = $derived(
 <svelte:window onkeydown={handleKeydown} />
 
 {#if open}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-		onclick={handleBackdropClick}
-	>
-		<div
-			class="bg-surface-panel border border-edge rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col"
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="modal-title"
-		>
-			<!-- Header -->
-			<div class="flex items-center justify-between px-5 py-4 border-b border-edge">
-				<h2 id="modal-title" class="text-foreground-bright font-bold text-base">
-					? where can I find my session logs?
-				</h2>
-				<button
-					class="text-muted hover:text-foreground-bright transition-colors cursor-pointer p-1"
-					onclick={onClose}
-					aria-label="Close modal"
-				>
-					<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
-			</div>
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+    onclick={handleBackdropClick}
+  >
+    <div
+      class="bg-surface-panel border border-edge rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between px-5 py-4 border-b border-edge"
+      >
+        <h2 id="modal-title" class="text-foreground-bright font-bold text-base">
+          ? where can I find my session logs?
+        </h2>
+        <button
+          class="text-muted hover:text-foreground-bright transition-colors cursor-pointer p-1"
+          onclick={onClose}
+          aria-label="Close modal"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
 
-			<!-- Content -->
-			<div class="flex flex-1 overflow-hidden">
-				<!-- Left column: Agent selector -->
-				<div class="w-48 shrink-0 border-r border-edge p-4 space-y-2">
-					<p class="text-xs text-muted mb-3">// select agent</p>
-					{#each agents as agent}
-						<button
-							class="w-full text-left px-3 py-2 rounded text-sm transition-colors cursor-pointer {selectedAgent ===
+      <!-- Content -->
+      <div class="flex flex-1 overflow-hidden">
+        <!-- Left column: Agent selector -->
+        <div class="w-48 shrink-0 border-r border-edge p-4 space-y-2">
+          <p class="text-xs text-muted mb-3">// select agent</p>
+          {#each agents as agent}
+            <button
+              class="w-full text-left px-3 py-2 rounded text-sm transition-colors cursor-pointer {selectedAgent ===
 							agent.id
 								? 'bg-accent-dim border border-accent text-accent'
 								: 'border border-edge text-foreground hover:border-foreground/30 hover:text-foreground-bright'}"
-							onclick={() => (selectedAgent = agent.id)}
-						>
-							<span class="text-muted text-xs">$</span> {agent.label}
-						</button>
-					{/each}
-				</div>
+              onclick={() => (selectedAgent = agent.id)}
+            >
+              <span class="text-muted text-xs">$</span>
+              {agent.label}
+            </button>
+          {/each}
+        </div>
 
-				<!-- Right column: OS selector and instructions -->
-				<div class="flex-1 p-5 overflow-y-auto">
-					<!-- OS selector -->
-					<div class="flex gap-1 mb-5 border-b border-edge">
-						{#each osOptions as os}
-							<button
-								class="px-4 py-2 text-sm transition-colors cursor-pointer -mb-px {selectedOS === os.id
+        <!-- Right column: OS selector and instructions -->
+        <div class="flex-1 p-5 overflow-y-auto">
+          <!-- OS selector -->
+          <div class="flex gap-1 mb-5 border-b border-edge">
+            {#each osOptions as os}
+              <button
+                class="px-4 py-2 text-sm transition-colors cursor-pointer -mb-px {selectedOS === os.id
 									? 'text-accent border-b-2 border-accent'
 									: 'text-muted hover:text-foreground-bright'}"
-								onclick={() => (selectedOS = os.id)}
-							>
-								{os.name}
-							</button>
-						{/each}
-					</div>
+                onclick={() => (selectedOS = os.id)}
+              >
+                {os.name}
+              </button>
+            {/each}
+          </div>
 
-					<!-- Instructions -->
-					<div class="space-y-4">
-						<div>
-							<h3 class="text-foreground-bright font-medium text-sm mb-2">{currentAgentName}</h3>
-							<p class="text-muted text-sm leading-relaxed">{currentInstructions}</p>
-						</div>
+          <!-- Instructions -->
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-foreground-bright font-medium text-sm mb-2">
+                {currentAgentName}
+              </h3>
+              <p class="text-muted text-sm leading-relaxed">
+                {currentInstructions}
+              </p>
+            </div>
 
-						<!-- Path display -->
-						<div class="space-y-2">
-							<p class="text-xs text-muted">// default path</p>
-							<div
-								class="flex items-center gap-2 bg-surface border border-edge rounded px-3 py-2 font-mono text-sm"
-							>
-								<code class="flex-1 text-foreground-bright overflow-x-auto whitespace-nowrap">
-									{currentPath.path}
-								</code>
-								<button
-									class="shrink-0 text-muted hover:text-accent transition-colors cursor-pointer p-1"
-									onclick={copyPath}
-									aria-label="Copy path"
-									title="Copy path"
-								>
-									{#if copied}
-										<svg class="w-4 h-4 text-status-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-										</svg>
-									{:else}
-										<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-											/>
-										</svg>
-									{/if}
-								</button>
-							</div>
-							<p class="text-xs text-muted/60">{currentPath.expanded}</p>
-						</div>
-
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <!-- Path display -->
+            <div class="space-y-2">
+              <p class="text-xs text-muted">// default path</p>
+              <div
+                class="flex items-center gap-2 bg-surface border border-edge rounded px-3 py-2 font-mono text-sm"
+              >
+                <code
+                  class="flex-1 text-foreground-bright overflow-x-auto whitespace-nowrap"
+                >
+                  {currentPath.path}
+                </code>
+                <button
+                  class="shrink-0 text-muted hover:text-accent transition-colors cursor-pointer p-1"
+                  onclick={copyPath}
+                  aria-label="Copy path"
+                  title="Copy path"
+                >
+                  {#if copied}
+                    <svg
+                      class="w-4 h-4 text-status-success"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  {:else}
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  {/if}
+                </button>
+              </div>
+              <p class="text-xs text-muted/60">{currentPath.expanded}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {/if}

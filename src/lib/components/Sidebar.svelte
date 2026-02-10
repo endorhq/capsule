@@ -1,42 +1,42 @@
 <script lang="ts">
-  import type { SessionMeta } from "$lib/types";
-  import SessionList from "./SessionList.svelte";
-  import SidebarFooter from "./SidebarFooter.svelte";
-  import LogsLocationModal from "./LogsLocationModal.svelte";
+import type { SessionMeta } from '$lib/types';
+import LogsLocationModal from './LogsLocationModal.svelte';
+import SessionList from './SessionList.svelte';
+import SidebarFooter from './SidebarFooter.svelte';
 
-  interface Props {
-    sessions: SessionMeta[];
-    selectedId: string | null;
-    count: number;
-    loading?: boolean;
-    onSelect: (id: string) => void;
-    onUpload: (file: File) => void;
-    onClearAll: () => void;
-    onRemove: (id: string) => void;
+interface Props {
+  sessions: SessionMeta[];
+  selectedId: string | null;
+  count: number;
+  loading?: boolean;
+  onSelect: (id: string) => void;
+  onUpload: (file: File) => void;
+  onClearAll: () => void;
+  onRemove: (id: string) => void;
+}
+
+let {
+  sessions,
+  selectedId,
+  count,
+  loading = false,
+  onSelect,
+  onUpload,
+  onClearAll,
+  onRemove,
+}: Props = $props();
+
+let fileInput: HTMLInputElement;
+let showLogsModal = $state(false);
+
+function handleFileChange(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (file) {
+    onUpload(file);
+    input.value = '';
   }
-
-  let {
-    sessions,
-    selectedId,
-    count,
-    loading = false,
-    onSelect,
-    onUpload,
-    onClearAll,
-    onRemove,
-  }: Props = $props();
-
-  let fileInput: HTMLInputElement;
-  let showLogsModal = $state(false);
-
-  function handleFileChange(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) {
-      onUpload(file);
-      input.value = "";
-    }
-  }
+}
 </script>
 
 <aside

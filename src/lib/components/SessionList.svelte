@@ -13,7 +13,12 @@ let { sessions, selectedId, onSelect, onRemove }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-0.5">
-	{#each sessions as session (session.id)}
-		<SessionItem {session} isSelected={session.id === selectedId} {onSelect} {onRemove} />
-	{/each}
+  {#each sessions as session (session.id)}
+    <SessionItem
+      {session}
+      isSelected={session.id === selectedId}
+      {onSelect}
+      {onRemove}
+    />
+  {/each}
 </div>

@@ -1,10 +1,10 @@
 <script lang="ts">
+import Footer from '$lib/components/Footer.svelte';
+import Header from '$lib/components/Header.svelte';
+import MainContent from '$lib/components/MainContent.svelte';
+import Sidebar from '$lib/components/Sidebar.svelte';
 import { getSessionState } from '$lib/state/sessions.svelte';
 import { getTabState } from '$lib/state/tabs.svelte';
-import Header from '$lib/components/Header.svelte';
-import Footer from '$lib/components/Footer.svelte';
-import Sidebar from '$lib/components/Sidebar.svelte';
-import MainContent from '$lib/components/MainContent.svelte';
 
 const sessionState = getSessionState();
 const tabState = getTabState();
@@ -49,33 +49,33 @@ async function handleRemove(id: string) {
 </script>
 
 <div class="flex flex-col h-screen bg-surface font-mono">
-	<Header />
-	<div class="flex flex-1 overflow-hidden">
-		<Sidebar
-			sessions={sessionState.sessions}
-			selectedId={tabState.activeSessionId}
-			count={sessionState.count}
-			loading={sessionState.loading}
-			onSelect={handleSelect}
-			onUpload={handleSidebarUpload}
-			onClearAll={sessionState.clearAll}
-			onRemove={handleRemove}
-		/>
-		<MainContent
-			tabs={tabState.tabs}
-			activeTabId={tabState.activeTabId}
-			onActivateTab={tabState.activateTab}
-			onCloseTab={tabState.closeTab}
-			onNewTab={() => tabState.openTab()}
-			onUpload={sessionState.upload}
-			onUpdateTab={tabState.updateTab}
-			getSession={sessionState.getSession}
-			parseSessionById={sessionState.parseSessionById}
-			onGistLoad={handleGistLoad}
-			gistLoading={sessionState.gistLoading}
-			gistError={sessionState.gistError}
-			onDelete={handleRemove}
-		/>
-	</div>
-	<Footer />
+  <Header />
+  <div class="flex flex-1 overflow-hidden">
+    <Sidebar
+      sessions={sessionState.sessions}
+      selectedId={tabState.activeSessionId}
+      count={sessionState.count}
+      loading={sessionState.loading}
+      onSelect={handleSelect}
+      onUpload={handleSidebarUpload}
+      onClearAll={sessionState.clearAll}
+      onRemove={handleRemove}
+    />
+    <MainContent
+      tabs={tabState.tabs}
+      activeTabId={tabState.activeTabId}
+      onActivateTab={tabState.activateTab}
+      onCloseTab={tabState.closeTab}
+      onNewTab={() => tabState.openTab()}
+      onUpload={sessionState.upload}
+      onUpdateTab={tabState.updateTab}
+      getSession={sessionState.getSession}
+      parseSessionById={sessionState.parseSessionById}
+      onGistLoad={handleGistLoad}
+      gistLoading={sessionState.gistLoading}
+      gistError={sessionState.gistError}
+      onDelete={handleRemove}
+    />
+  </div>
+  <Footer />
 </div>

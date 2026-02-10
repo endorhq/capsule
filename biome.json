@@ -76,6 +76,7 @@
   },
   "html": {
     "formatter": {
+      "enabled": true,
       "indentScriptAndStyle": false,
       "selfCloseVoidElements": "always"
     },

@@ -34,36 +34,36 @@ const displayLabel = $derived.by((): string => {
 </script>
 
 <button
-	class="group relative flex items-center gap-2 px-3 py-2 text-sm border-r border-edge transition-colors cursor-pointer shrink-0
+  class="group relative flex items-center gap-2 px-3 py-2 text-sm border-r border-edge transition-colors cursor-pointer shrink-0
 		{isActive
 			? 'bg-surface text-foreground-bright border-b-0'
 			: 'bg-surface-panel text-muted hover:text-foreground hover:bg-surface-hover'}"
-	onclick={() => onActivate(tab.id)}
-	onkeydown={handleKeydown}
-	onmouseenter={() => (isHovered = true)}
-	onmouseleave={() => (isHovered = false)}
-	title={tab.label}
+  onclick={() => onActivate(tab.id)}
+  onkeydown={handleKeydown}
+  onmouseenter={() => (isHovered = true)}
+  onmouseleave={() => (isHovered = false)}
+  title={tab.label}
 >
-	<span class="truncate max-w-32">
-		{tab.sessionId ? displayLabel + '/' : displayLabel}
-	</span>
+  <span class="truncate max-w-32">
+    {tab.sessionId ? displayLabel + '/' : displayLabel}
+  </span>
 
-	{#if canClose && (isHovered || isActive)}
-		<span
-			role="button"
-			tabindex="0"
-			class="w-4 h-4 flex items-center justify-center rounded hover:bg-surface-selected text-muted hover:text-accent transition-colors cursor-pointer"
-			onclick={handleClose}
-			onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClose(e as unknown as MouseEvent); }}
-			title="Close tab"
-		>
-			×
-		</span>
-	{:else}
-		<span class="w-4"></span>
-	{/if}
+  {#if canClose && (isHovered || isActive)}
+    <span
+      role="button"
+      tabindex="0"
+      class="w-4 h-4 flex items-center justify-center rounded hover:bg-surface-selected text-muted hover:text-accent transition-colors cursor-pointer"
+      onclick={handleClose}
+      onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClose(e as unknown as MouseEvent); }}
+      title="Close tab"
+    >
+      ×
+    </span>
+  {:else}
+    <span class="w-4"></span>
+  {/if}
 
-	{#if isActive}
-		<span class="absolute bottom-0 left-0 right-0 h-px bg-surface"></span>
-	{/if}
+  {#if isActive}
+    <span class="absolute bottom-0 left-0 right-0 h-px bg-surface"></span>
+  {/if}
 </button>

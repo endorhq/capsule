@@ -12,6 +12,4 @@ let { content, class: className = '' }: Props = $props();
 let html = $derived(renderMarkdown(content));
 </script>
 
-<div class="markdown-body {className}">
-	{@html html}
-</div>
+<div class="markdown-body {className}">{@html html}</div>

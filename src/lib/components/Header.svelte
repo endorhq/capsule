@@ -1,5 +1,5 @@
 <script lang="ts">
-  import logo from "$lib/assets/logo.svg";
+import logo from '$lib/assets/logo.svg';
 </script>
 
 <header
@@ -18,7 +18,8 @@
       >Capsule</span
     >
     <span class="text-xs text-muted hidden sm:inline"
-      ><span class="text-muted/50">//</span> An interactive AI agent session inspector</span
+      ><span class="text-muted/50">//</span> An interactive AI agent session
+      inspector</span
     >
   </div>
   <nav class="flex items-center gap-6 text-sm text-muted">
