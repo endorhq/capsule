@@ -1,6 +1,6 @@
 {
   "name": "@endorhq/capsule",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "bin": {
     "capsule": "./dist/index.js"
