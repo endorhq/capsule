@@ -22,5 +22,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm lint
-      - run: pnpm biome format --check
+      - run: pnpm lint --error-on-warnings
+      - run: |
+          pnpm biome format
+          git diff --exit-code
