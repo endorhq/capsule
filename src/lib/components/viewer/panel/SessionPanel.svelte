@@ -1,44 +1,44 @@
 <script lang="ts">
-	import type { ParsedSession } from '$lib/types/timeline';
-	import type { SessionMeta } from '$lib/types';
-	import SessionInfo from './SessionInfo.svelte';
-	import TokenStats from './TokenStats.svelte';
-	import FileList from './FileList.svelte';
-	import SessionActions from './SessionActions.svelte';
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
-	import ShareModal from '$lib/components/modals/ShareModal.svelte';
+import type { ParsedSession } from '$lib/types/timeline';
+import type { SessionMeta } from '$lib/types';
+import SessionInfo from './SessionInfo.svelte';
+import TokenStats from './TokenStats.svelte';
+import FileList from './FileList.svelte';
+import SessionActions from './SessionActions.svelte';
+import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
+import ShareModal from '$lib/components/modals/ShareModal.svelte';
 
-	interface Props {
-		session: ParsedSession;
-		meta: SessionMeta;
-		onDelete: (id: string) => void;
-	}
+interface Props {
+  session: ParsedSession;
+  meta: SessionMeta;
+  onDelete: (id: string) => void;
+}
 
-	let { session, meta, onDelete }: Props = $props();
+let { session, meta, onDelete }: Props = $props();
 
-	let showDeleteConfirm = $state(false);
-	let showShareModal = $state(false);
+let showDeleteConfirm = $state(false);
+let showShareModal = $state(false);
 
-	function handleDeleteClick() {
-		showDeleteConfirm = true;
-	}
+function handleDeleteClick() {
+  showDeleteConfirm = true;
+}
 
-	function handleShareClick() {
-		showShareModal = true;
-	}
+function handleShareClick() {
+  showShareModal = true;
+}
 
-	function handleConfirmDelete() {
-		showDeleteConfirm = false;
-		onDelete(meta.id);
-	}
+function handleConfirmDelete() {
+  showDeleteConfirm = false;
+  onDelete(meta.id);
+}
 
-	function handleCancelDelete() {
-		showDeleteConfirm = false;
-	}
+function handleCancelDelete() {
+  showDeleteConfirm = false;
+}
 
-	function handleCloseShare() {
-		showShareModal = false;
-	}
+function handleCloseShare() {
+  showShareModal = false;
+}
 </script>
 
 <aside class="w-80 shrink-0 border-l border-edge overflow-y-auto flex flex-col">

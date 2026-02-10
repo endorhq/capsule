@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { SessionMeta } from '$lib/types';
+import type { SessionMeta } from '$lib/types';
 
-	interface Props {
-		meta: SessionMeta;
-		onDelete: () => void;
-		onShare: () => void;
-	}
+interface Props {
+  meta: SessionMeta;
+  onDelete: () => void;
+  onShare: () => void;
+}
 
-	let { meta, onDelete, onShare }: Props = $props();
+let { meta, onDelete, onShare }: Props = $props();
 </script>
 
 <div class="flex gap-2">

@@ -1,59 +1,59 @@
 <script lang="ts">
-	import type { SessionMeta } from '$lib/types';
+import type { SessionMeta } from '$lib/types';
 
-	interface Props {
-		open: boolean;
-		sessionMeta: SessionMeta;
-		onClose: () => void;
-	}
+interface Props {
+  open: boolean;
+  sessionMeta: SessionMeta;
+  onClose: () => void;
+}
 
-	let { open, sessionMeta, onClose }: Props = $props();
+let { open, sessionMeta, onClose }: Props = $props();
 
-	let copied = $state(false);
+let copied = $state(false);
 
-	const isGist = $derived(sessionMeta.source?.type === 'gist');
-	const gistId = $derived(
-		sessionMeta.source?.type === 'gist' ? sessionMeta.source.gistId : null
-	);
+const isGist = $derived(sessionMeta.source?.type === 'gist');
+const gistId = $derived(
+  sessionMeta.source?.type === 'gist' ? sessionMeta.source.gistId : null
+);
 
-	const shareUrl = $derived.by(() => {
-		if (!isGist || !gistId) return '';
-		if (typeof window === 'undefined') return '';
-		return `${window.location.origin}?gist=${gistId}`;
-	});
+const shareUrl = $derived.by(() => {
+  if (!isGist || !gistId) return '';
+  if (typeof window === 'undefined') return '';
+  return `${window.location.origin}?gist=${gistId}`;
+});
 
-	function handleBackdropClick(e: MouseEvent) {
-		if (e.target === e.currentTarget) {
-			onClose();
-		}
-	}
+function handleBackdropClick(e: MouseEvent) {
+  if (e.target === e.currentTarget) {
+    onClose();
+  }
+}
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			onClose();
-		}
-	}
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    onClose();
+  }
+}
 
-	async function copyUrl() {
-		try {
-			await navigator.clipboard.writeText(shareUrl);
-			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
-		} catch {
-			const textArea = document.createElement('textarea');
-			textArea.value = shareUrl;
-			document.body.appendChild(textArea);
-			textArea.select();
-			document.execCommand('copy');
-			document.body.removeChild(textArea);
-			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
-		}
-	}
+async function copyUrl() {
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  } catch {
+    const textArea = document.createElement('textarea');
+    textArea.value = shareUrl;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  }
+}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

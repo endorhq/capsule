@@ -1,9 +1,9 @@
 <script lang="ts">
-	interface Props {
-		value: string;
-	}
+interface Props {
+  value: string;
+}
 
-	let { value = $bindable() }: Props = $props();
+let { value = $bindable() }: Props = $props();
 </script>
 
 <div class="flex items-center gap-2 px-4 py-3 border-b border-edge">

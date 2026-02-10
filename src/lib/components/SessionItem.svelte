@@ -1,43 +1,47 @@
 <script lang="ts">
-	import type { SessionMeta } from '$lib/types';
+import type { SessionMeta } from '$lib/types';
 
-	interface Props {
-		session: SessionMeta;
-		isSelected: boolean;
-		onSelect: (id: string) => void;
-		onRemove: (id: string) => void;
-	}
+interface Props {
+  session: SessionMeta;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  onRemove: (id: string) => void;
+}
 
-	let { session, isSelected, onSelect, onRemove }: Props = $props();
+let { session, isSelected, onSelect, onRemove }: Props = $props();
 
-	let isHovered = $state(false);
+let isHovered = $state(false);
 
-	function formatRelativeTime(ts: number): string {
-		const diff = Date.now() - ts;
-		const seconds = Math.floor(diff / 1000);
-		if (seconds < 60) return 'just now';
-		const minutes = Math.floor(seconds / 60);
-		if (minutes < 60) return `${minutes}m ago`;
-		const hours = Math.floor(minutes / 60);
-		if (hours < 24) return `${hours}h ago`;
-		const days = Math.floor(hours / 24);
-		return `${days}d ago`;
-	}
+function formatRelativeTime(ts: number): string {
+  const diff = Date.now() - ts;
+  const seconds = Math.floor(diff / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
-	// Truncate long names (UUIDs, hashes) to a reasonable length
-	const displayName = $derived.by((): string => {
-		const name = session.name;
-		if (name.length <= 24) return name;
-		return name.slice(0, 21) + '...';
-	});
+// Truncate long names (UUIDs, hashes) to a reasonable length
+const displayName = $derived.by((): string => {
+  const name = session.name;
+  if (name.length <= 24) return name;
+  return name.slice(0, 21) + '...';
+});
 
-	const formatLabel = $derived(session.agentFormat && session.agentFormat !== 'unknown' ? session.agentFormat : null);
-	const isGist = $derived(session.source?.type === 'gist');
+const formatLabel = $derived(
+  session.agentFormat && session.agentFormat !== 'unknown'
+    ? session.agentFormat
+    : null
+);
+const isGist = $derived(session.source?.type === 'gist');
 
-	function handleRemove(e: MouseEvent) {
-		e.stopPropagation();
-		onRemove(session.id);
-	}
+function handleRemove(e: MouseEvent) {
+  e.stopPropagation();
+  onRemove(session.id);
+}
 </script>
 
 <button

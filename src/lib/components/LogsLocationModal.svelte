@@ -1,149 +1,156 @@
 <script lang="ts">
-	interface Props {
-		open: boolean;
-		onClose: () => void;
-	}
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
 
-	let { open, onClose }: Props = $props();
+let { open, onClose }: Props = $props();
 
-	type Agent = 'claude' | 'codex' | 'copilot' | 'gemini';
-	type OS = 'windows' | 'macos' | 'linux';
+type Agent = 'claude' | 'codex' | 'copilot' | 'gemini';
+type OS = 'windows' | 'macos' | 'linux';
 
-	let selectedAgent = $state<Agent>('claude');
-	let selectedOS = $state<OS>(detectOS());
-	let copied = $state(false);
+let selectedAgent = $state<Agent>('claude');
+let selectedOS = $state<OS>(detectOS());
+let copied = $state(false);
 
-	const agents: { id: Agent; name: string; label: string }[] = [
-		{ id: 'claude', name: 'Claude Code', label: 'claude' },
-		{ id: 'codex', name: 'Codex', label: 'codex' },
-		{ id: 'copilot', name: 'Copilot', label: 'copilot' },
-		{ id: 'gemini', name: 'Gemini CLI', label: 'gemini' }
-	];
+const agents: { id: Agent; name: string; label: string }[] = [
+  { id: 'claude', name: 'Claude Code', label: 'claude' },
+  { id: 'codex', name: 'Codex', label: 'codex' },
+  { id: 'copilot', name: 'Copilot', label: 'copilot' },
+  { id: 'gemini', name: 'Gemini CLI', label: 'gemini' },
+];
 
-	const osOptions: { id: OS; name: string }[] = [
-		{ id: 'windows', name: 'Windows' },
-		{ id: 'macos', name: 'macOS' },
-		{ id: 'linux', name: 'Linux' }
-	];
+const osOptions: { id: OS; name: string }[] = [
+  { id: 'windows', name: 'Windows' },
+  { id: 'macos', name: 'macOS' },
+  { id: 'linux', name: 'Linux' },
+];
 
-	const logPaths: Record<Agent, Record<OS, { path: string; expanded: string }>> = {
-		claude: {
-			windows: {
-				path: '%USERPROFILE%\\.claude\\projects\\<project-hash>\\',
-				expanded: 'C:\\Users\\<username>\\.claude\\projects\\<project-hash>\\'
-			},
-			macos: {
-				path: '~/.claude/projects/<project-hash>/',
-				expanded: '/Users/<username>/.claude/projects/<project-hash>/'
-			},
-			linux: {
-				path: '~/.claude/projects/<project-hash>/',
-				expanded: '/home/<username>/.claude/projects/<project-hash>/'
-			}
-		},
-		codex: {
-			windows: {
-				path: '%USERPROFILE%\\.codex\\sessions\\<year>\\<month>\\<day>\\',
-				expanded: 'C:\\Users\\<username>\\.codex\\sessions\\2026\\02\\05\\'
-			},
-			macos: {
-				path: '~/.codex/sessions/<year>/<month>/<day>/',
-				expanded: '/Users/<username>/.codex/sessions/2026/02/05/'
-			},
-			linux: {
-				path: '~/.codex/sessions/<year>/<month>/<day>/',
-				expanded: '/home/<username>/.codex/sessions/2026/02/05/'
-			}
-		},
-		copilot: {
-			windows: {
-				path: '%USERPROFILE%\\.copilot\\session-state\\<session-id>\\',
-				expanded: 'C:\\Users\\<username>\\.copilot\\session-state\\<session-id>\\'
-			},
-			macos: {
-				path: '~/.copilot/session-state/<session-id>/',
-				expanded: '/Users/<username>/.copilot/session-state/<session-id>/'
-			},
-			linux: {
-				path: '~/.copilot/session-state/<session-id>/',
-				expanded: '/home/<username>/.copilot/session-state/<session-id>/'
-			}
-		},
-		gemini: {
-			windows: {
-				path: '%USERPROFILE%\\.gemini\\tmp\\<project-hash>\\chats\\',
-				expanded: 'C:\\Users\\<username>\\.gemini\\tmp\\<project-hash>\\chats\\'
-			},
-			macos: {
-				path: '~/.gemini/tmp/<project-hash>/chats/',
-				expanded: '/Users/<username>/.gemini/tmp/<project-hash>/chats/'
-			},
-			linux: {
-				path: '~/.gemini/tmp/<project-hash>/chats/',
-				expanded: '/home/<username>/.gemini/tmp/<project-hash>/chats/'
-			}
-		}
-	};
+const logPaths: Record<
+  Agent,
+  Record<OS, { path: string; expanded: string }>
+> = {
+  claude: {
+    windows: {
+      path: '%USERPROFILE%\\.claude\\projects\\<project-hash>\\',
+      expanded: 'C:\\Users\\<username>\\.claude\\projects\\<project-hash>\\',
+    },
+    macos: {
+      path: '~/.claude/projects/<project-hash>/',
+      expanded: '/Users/<username>/.claude/projects/<project-hash>/',
+    },
+    linux: {
+      path: '~/.claude/projects/<project-hash>/',
+      expanded: '/home/<username>/.claude/projects/<project-hash>/',
+    },
+  },
+  codex: {
+    windows: {
+      path: '%USERPROFILE%\\.codex\\sessions\\<year>\\<month>\\<day>\\',
+      expanded: 'C:\\Users\\<username>\\.codex\\sessions\\2026\\02\\05\\',
+    },
+    macos: {
+      path: '~/.codex/sessions/<year>/<month>/<day>/',
+      expanded: '/Users/<username>/.codex/sessions/2026/02/05/',
+    },
+    linux: {
+      path: '~/.codex/sessions/<year>/<month>/<day>/',
+      expanded: '/home/<username>/.codex/sessions/2026/02/05/',
+    },
+  },
+  copilot: {
+    windows: {
+      path: '%USERPROFILE%\\.copilot\\session-state\\<session-id>\\',
+      expanded:
+        'C:\\Users\\<username>\\.copilot\\session-state\\<session-id>\\',
+    },
+    macos: {
+      path: '~/.copilot/session-state/<session-id>/',
+      expanded: '/Users/<username>/.copilot/session-state/<session-id>/',
+    },
+    linux: {
+      path: '~/.copilot/session-state/<session-id>/',
+      expanded: '/home/<username>/.copilot/session-state/<session-id>/',
+    },
+  },
+  gemini: {
+    windows: {
+      path: '%USERPROFILE%\\.gemini\\tmp\\<project-hash>\\chats\\',
+      expanded: 'C:\\Users\\<username>\\.gemini\\tmp\\<project-hash>\\chats\\',
+    },
+    macos: {
+      path: '~/.gemini/tmp/<project-hash>/chats/',
+      expanded: '/Users/<username>/.gemini/tmp/<project-hash>/chats/',
+    },
+    linux: {
+      path: '~/.gemini/tmp/<project-hash>/chats/',
+      expanded: '/home/<username>/.gemini/tmp/<project-hash>/chats/',
+    },
+  },
+};
 
-	const instructions: Record<Agent, string> = {
-		claude:
-			'Claude Code stores session logs in the .claude/projects directory. Each project has its own subdirectory (named with a path hash) containing JSONL session files with UUID names.',
-		codex:
-			'Codex CLI stores session logs in the .codex/sessions directory, organized by date (year/month/day). Each session is saved as a JSONL file with a timestamp and UUID.',
-		copilot:
-			'GitHub Copilot stores session logs in the .copilot/session-state directory. Each session has its own subdirectory containing an events.jsonl file.',
-		gemini:
-			'Gemini CLI stores session logs in the .gemini/tmp directory. Each project has a subdirectory (named with a hash) containing a chats folder with JSON session files.'
-	};
+const instructions: Record<Agent, string> = {
+  claude:
+    'Claude Code stores session logs in the .claude/projects directory. Each project has its own subdirectory (named with a path hash) containing JSONL session files with UUID names.',
+  codex:
+    'Codex CLI stores session logs in the .codex/sessions directory, organized by date (year/month/day). Each session is saved as a JSONL file with a timestamp and UUID.',
+  copilot:
+    'GitHub Copilot stores session logs in the .copilot/session-state directory. Each session has its own subdirectory containing an events.jsonl file.',
+  gemini:
+    'Gemini CLI stores session logs in the .gemini/tmp directory. Each project has a subdirectory (named with a hash) containing a chats folder with JSON session files.',
+};
 
-	function detectOS(): OS {
-		if (typeof navigator === 'undefined') return 'linux';
-		const platform = navigator.platform?.toLowerCase() || '';
-		const userAgent = navigator.userAgent?.toLowerCase() || '';
+function detectOS(): OS {
+  if (typeof navigator === 'undefined') return 'linux';
+  const platform = navigator.platform?.toLowerCase() || '';
+  const userAgent = navigator.userAgent?.toLowerCase() || '';
 
-		if (platform.includes('win') || userAgent.includes('windows')) return 'windows';
-		if (platform.includes('mac') || userAgent.includes('mac')) return 'macos';
-		return 'linux';
-	}
+  if (platform.includes('win') || userAgent.includes('windows'))
+    return 'windows';
+  if (platform.includes('mac') || userAgent.includes('mac')) return 'macos';
+  return 'linux';
+}
 
-	function handleBackdropClick(e: MouseEvent) {
-		if (e.target === e.currentTarget) {
-			onClose();
-		}
-	}
+function handleBackdropClick(e: MouseEvent) {
+  if (e.target === e.currentTarget) {
+    onClose();
+  }
+}
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			onClose();
-		}
-	}
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    onClose();
+  }
+}
 
-	async function copyPath() {
-		const path = logPaths[selectedAgent][selectedOS].path;
-		try {
-			await navigator.clipboard.writeText(path);
-			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
-		} catch {
-			// Fallback for older browsers
-			const textArea = document.createElement('textarea');
-			textArea.value = path;
-			document.body.appendChild(textArea);
-			textArea.select();
-			document.execCommand('copy');
-			document.body.removeChild(textArea);
-			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
-		}
-	}
+async function copyPath() {
+  const path = logPaths[selectedAgent][selectedOS].path;
+  try {
+    await navigator.clipboard.writeText(path);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  } catch {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = path;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  }
+}
 
-	const currentPath = $derived(logPaths[selectedAgent][selectedOS]);
-	const currentInstructions = $derived(instructions[selectedAgent]);
-	const currentAgentName = $derived(agents.find((a) => a.id === selectedAgent)?.name || '');
+const currentPath = $derived(logPaths[selectedAgent][selectedOS]);
+const currentInstructions = $derived(instructions[selectedAgent]);
+const currentAgentName = $derived(
+  agents.find(a => a.id === selectedAgent)?.name || ''
+);
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

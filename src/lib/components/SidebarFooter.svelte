@@ -1,26 +1,26 @@
 <script lang="ts">
-	import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
+import ConfirmationModal from '$lib/components/modals/ConfirmationModal.svelte';
 
-	interface Props {
-		onClearAll: () => void;
-	}
+interface Props {
+  onClearAll: () => void;
+}
 
-	let { onClearAll }: Props = $props();
+let { onClearAll }: Props = $props();
 
-	let showClearConfirm = $state(false);
+let showClearConfirm = $state(false);
 
-	function handleClearClick() {
-		showClearConfirm = true;
-	}
+function handleClearClick() {
+  showClearConfirm = true;
+}
 
-	function handleConfirmClear() {
-		showClearConfirm = false;
-		onClearAll();
-	}
+function handleConfirmClear() {
+  showClearConfirm = false;
+  onClearAll();
+}
 
-	function handleCancelClear() {
-		showClearConfirm = false;
-	}
+function handleCancelClear() {
+  showClearConfirm = false;
+}
 </script>
 
 <div class="border-t border-edge px-3 py-3 space-y-3">

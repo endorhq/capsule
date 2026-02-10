@@ -13,24 +13,27 @@ export { parseGeminiSession } from './gemini';
 export { parseClaudeSession } from './claude';
 
 export function parseSession(
-	content: string,
-	fileFormat: 'json' | 'jsonl',
-	knownFormat?: AgentFormat
+  content: string,
+  fileFormat: 'json' | 'jsonl',
+  knownFormat?: AgentFormat
 ): ParsedSession {
-	const format = knownFormat && knownFormat !== 'unknown' ? knownFormat : detectFormat(content, fileFormat);
+  const format =
+    knownFormat && knownFormat !== 'unknown'
+      ? knownFormat
+      : detectFormat(content, fileFormat);
 
-	switch (format) {
-		case 'codex':
-			return parseCodexSession(content);
-		case 'copilot':
-			return parseCopilotSession(content);
-		case 'gemini':
-			return parseGeminiSession(content);
-		case 'claude':
-			return parseClaudeSession(content);
-		case 'opencode':
-			throw new Error(`Parser for "${format}" is not yet implemented`);
-		default:
-			throw new Error(`Unknown session format: "${format}"`);
-	}
+  switch (format) {
+    case 'codex':
+      return parseCodexSession(content);
+    case 'copilot':
+      return parseCopilotSession(content);
+    case 'gemini':
+      return parseGeminiSession(content);
+    case 'claude':
+      return parseClaudeSession(content);
+    case 'opencode':
+      throw new Error(`Parser for "${format}" is not yet implemented`);
+    default:
+      throw new Error(`Unknown session format: "${format}"`);
+  }
 }

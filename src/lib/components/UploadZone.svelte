@@ -1,65 +1,70 @@
 <script lang="ts">
-	import LogsLocationModal from './LogsLocationModal.svelte';
+import LogsLocationModal from './LogsLocationModal.svelte';
 
-	interface Props {
-		onUpload: (file: File) => void;
-		onGistLoad?: (url: string) => Promise<void>;
-		gistLoading?: boolean;
-		gistError?: string | null;
-	}
+interface Props {
+  onUpload: (file: File) => void;
+  onGistLoad?: (url: string) => Promise<void>;
+  gistLoading?: boolean;
+  gistError?: string | null;
+}
 
-	let { onUpload, onGistLoad, gistLoading = false, gistError = null }: Props = $props();
+let {
+  onUpload,
+  onGistLoad,
+  gistLoading = false,
+  gistError = null,
+}: Props = $props();
 
-	let dragCounter = $state(0);
-	let fileInput: HTMLInputElement;
-	let showLogsModal = $state(false);
-	let gistInput = $state('');
+let dragCounter = $state(0);
+let fileInput: HTMLInputElement;
+let showLogsModal = $state(false);
+let gistInput = $state('');
 
-	const isDragging = $derived(dragCounter > 0);
+const isDragging = $derived(dragCounter > 0);
 
-	async function handleGistSubmit() {
-		if (!gistInput.trim() || !onGistLoad) return;
-		await onGistLoad(gistInput.trim());
-		gistInput = '';
-	}
+async function handleGistSubmit() {
+  if (!gistInput.trim() || !onGistLoad) return;
+  await onGistLoad(gistInput.trim());
+  gistInput = '';
+}
 
-	function handleGistKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter') {
-			handleGistSubmit();
-		}
-	}
+function handleGistKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter') {
+    handleGistSubmit();
+  }
+}
 
-	function handleDragEnter(e: DragEvent) {
-		e.preventDefault();
-		dragCounter++;
-	}
+function handleDragEnter(e: DragEvent) {
+  e.preventDefault();
+  dragCounter++;
+}
 
-	function handleDragLeave(e: DragEvent) {
-		e.preventDefault();
-		dragCounter--;
-	}
+function handleDragLeave(e: DragEvent) {
+  e.preventDefault();
+  dragCounter--;
+}
 
-	function handleDragOver(e: DragEvent) {
-		e.preventDefault();
-	}
+function handleDragOver(e: DragEvent) {
+  e.preventDefault();
+}
 
-	function handleDrop(e: DragEvent) {
-		e.preventDefault();
-		dragCounter = 0;
-		const file = e.dataTransfer?.files[0];
-		if (file && (file.name.endsWith('.jsonl') || file.name.endsWith('.json'))) {
-			onUpload(file);
-		}
-	}
+function handleDrop(e: DragEvent) {
+  e.preventDefault();
+  dragCounter = 0;
+  const file = e.dataTransfer?.files[0];
+  if (file && (file.name.endsWith('.jsonl') || file.name.endsWith('.json'))) {
+    onUpload(file);
+  }
+}
 
-	function handleFileChange(e: Event) {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (file) {
-			onUpload(file);
-			input.value = '';
-		}
-	}
+function handleFileChange(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (file) {
+    onUpload(file);
+    input.value = '';
+  }
+}
 </script>
 
 <div class="flex flex-col items-center justify-center h-full">

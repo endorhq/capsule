@@ -1,60 +1,70 @@
 <script lang="ts">
-	import type { ParsedSession, TimelineEntry, SubagentEntry as SubagentType } from '$lib/types/timeline';
-	import type { SessionMeta } from '$lib/types';
-	import FilterBar from './FilterBar.svelte';
-	import MessageThread from './MessageThread.svelte';
-	import SessionPanel from './panel/SessionPanel.svelte';
+import type {
+  ParsedSession,
+  TimelineEntry,
+  SubagentEntry as SubagentType,
+} from '$lib/types/timeline';
+import type { SessionMeta } from '$lib/types';
+import FilterBar from './FilterBar.svelte';
+import MessageThread from './MessageThread.svelte';
+import SessionPanel from './panel/SessionPanel.svelte';
 
-	interface Props {
-		session: ParsedSession;
-		meta: SessionMeta;
-		onDelete: (id: string) => void;
-	}
+interface Props {
+  session: ParsedSession;
+  meta: SessionMeta;
+  onDelete: (id: string) => void;
+}
 
-	let { session, meta, onDelete }: Props = $props();
+let { session, meta, onDelete }: Props = $props();
 
-	let filterText = $state('');
-	let selectedSubagent = $state<SubagentType | null>(null);
+let filterText = $state('');
+let selectedSubagent = $state<SubagentType | null>(null);
 
-	const filteredTimeline = $derived.by((): TimelineEntry[] => {
-		if (!filterText.trim()) return session.timeline;
+const filteredTimeline = $derived.by((): TimelineEntry[] => {
+  if (!filterText.trim()) return session.timeline;
 
-		const query = filterText.toLowerCase();
-		return session.timeline.filter((entry) => {
-			switch (entry.type) {
-				case 'user':
-					return entry.content.toLowerCase().includes(query);
-				case 'assistant':
-					return entry.content.toLowerCase().includes(query) ||
-						(entry.thinking?.text?.toLowerCase().includes(query) ?? false);
-				case 'tool_call':
-					return entry.name.toLowerCase().includes(query) ||
-						(entry.displayName?.toLowerCase().includes(query) ?? false) ||
-						(entry.result?.toLowerCase().includes(query) ?? false) ||
-						(entry.summary?.toLowerCase().includes(query) ?? false);
-				case 'subagent':
-					return entry.description.toLowerCase().includes(query) ||
-						entry.agentId.toLowerCase().includes(query) ||
-						entry.subagentType.toLowerCase().includes(query) ||
-						entry.prompt.toLowerCase().includes(query) ||
-						(entry.result?.toLowerCase().includes(query) ?? false);
-				case 'system':
-					return entry.content.toLowerCase().includes(query);
-				default:
-					return false;
-			}
-		});
-	});
+  const query = filterText.toLowerCase();
+  return session.timeline.filter(entry => {
+    switch (entry.type) {
+      case 'user':
+        return entry.content.toLowerCase().includes(query);
+      case 'assistant':
+        return (
+          entry.content.toLowerCase().includes(query) ||
+          (entry.thinking?.text?.toLowerCase().includes(query) ?? false)
+        );
+      case 'tool_call':
+        return (
+          entry.name.toLowerCase().includes(query) ||
+          (entry.displayName?.toLowerCase().includes(query) ?? false) ||
+          (entry.result?.toLowerCase().includes(query) ?? false) ||
+          (entry.summary?.toLowerCase().includes(query) ?? false)
+        );
+      case 'subagent':
+        return (
+          entry.description.toLowerCase().includes(query) ||
+          entry.agentId.toLowerCase().includes(query) ||
+          entry.subagentType.toLowerCase().includes(query) ||
+          entry.prompt.toLowerCase().includes(query) ||
+          (entry.result?.toLowerCase().includes(query) ?? false)
+        );
+      case 'system':
+        return entry.content.toLowerCase().includes(query);
+      default:
+        return false;
+    }
+  });
+});
 
-	function handleSubagentSelect(entry: SubagentType) {
-		selectedSubagent = entry;
-	}
+function handleSubagentSelect(entry: SubagentType) {
+  selectedSubagent = entry;
+}
 
-	function closeSubagent() {
-		selectedSubagent = null;
-	}
+function closeSubagent() {
+  selectedSubagent = null;
+}
 
-	const agentName = $derived(session.context.agentName.replace('-code', ''));
+const agentName = $derived(session.context.agentName.replace('-code', ''));
 </script>
 
 <div class="flex flex-1 overflow-hidden">

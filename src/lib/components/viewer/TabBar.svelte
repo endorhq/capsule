@@ -1,18 +1,18 @@
 <script lang="ts">
-	import type { Tab } from '$lib/types/tabs';
-	import TabItem from './TabItem.svelte';
+import type { Tab } from '$lib/types/tabs';
+import TabItem from './TabItem.svelte';
 
-	interface Props {
-		tabs: Tab[];
-		activeTabId: string;
-		onActivate: (id: string) => void;
-		onClose: (id: string) => void;
-		onNew: () => void;
-	}
+interface Props {
+  tabs: Tab[];
+  activeTabId: string;
+  onActivate: (id: string) => void;
+  onClose: (id: string) => void;
+  onNew: () => void;
+}
 
-	let { tabs, activeTabId, onActivate, onClose, onNew }: Props = $props();
+let { tabs, activeTabId, onActivate, onClose, onNew }: Props = $props();
 
-	const canClose = $derived(tabs.length > 1 || tabs[0]?.sessionId !== null);
+const canClose = $derived(tabs.length > 1 || tabs[0]?.sessionId !== null);
 </script>
 
 <div

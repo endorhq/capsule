@@ -1,36 +1,36 @@
 <script lang="ts">
-	import type { Tab } from '$lib/types/tabs';
+import type { Tab } from '$lib/types/tabs';
 
-	interface Props {
-		tab: Tab;
-		isActive: boolean;
-		canClose: boolean;
-		onActivate: (id: string) => void;
-		onClose: (id: string) => void;
-	}
+interface Props {
+  tab: Tab;
+  isActive: boolean;
+  canClose: boolean;
+  onActivate: (id: string) => void;
+  onClose: (id: string) => void;
+}
 
-	let { tab, isActive, canClose, onActivate, onClose }: Props = $props();
+let { tab, isActive, canClose, onActivate, onClose }: Props = $props();
 
-	let isHovered = $state(false);
+let isHovered = $state(false);
 
-	function handleClose(e: MouseEvent) {
-		e.stopPropagation();
-		onClose(tab.id);
-	}
+function handleClose(e: MouseEvent) {
+  e.stopPropagation();
+  onClose(tab.id);
+}
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			onActivate(tab.id);
-		}
-	}
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    onActivate(tab.id);
+  }
+}
 
-	// Truncate long labels
-	const displayLabel = $derived.by((): string => {
-		const label = tab.label;
-		if (label.length <= 18) return label;
-		return label.slice(0, 15) + '...';
-	});
+// Truncate long labels
+const displayLabel = $derived.by((): string => {
+  const label = tab.label;
+  if (label.length <= 18) return label;
+  return label.slice(0, 15) + '...';
+});
 </script>
 
 <button

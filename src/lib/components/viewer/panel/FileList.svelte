@@ -1,18 +1,18 @@
 <script lang="ts">
-	import type { FileEntry } from '$lib/types/timeline';
+import type { FileEntry } from '$lib/types/timeline';
 
-	interface Props {
-		files: FileEntry[];
-	}
+interface Props {
+  files: FileEntry[];
+}
 
-	let { files }: Props = $props();
+let { files }: Props = $props();
 
-	const readFiles = $derived(files.filter((f) => f.operation === 'read'));
-	const editedFiles = $derived(files.filter((f) => f.operation === 'edited'));
+const readFiles = $derived(files.filter(f => f.operation === 'read'));
+const editedFiles = $derived(files.filter(f => f.operation === 'edited'));
 
-	function basename(path: string): string {
-		return path.split('/').pop() || path;
-	}
+function basename(path: string): string {
+  return path.split('/').pop() || path;
+}
 </script>
 
 {#if files.length > 0}

@@ -1,97 +1,116 @@
 <script lang="ts">
-	import type { SessionMeta } from '$lib/types';
-	import type { ParsedSession } from '$lib/types/timeline';
-	import type { Tab } from '$lib/types/tabs';
-	import { SvelteMap } from 'svelte/reactivity';
-	import UploadZone from './UploadZone.svelte';
-	import SessionViewer from './viewer/SessionViewer.svelte';
-	import TabBar from './viewer/TabBar.svelte';
+import type { SessionMeta } from '$lib/types';
+import type { ParsedSession } from '$lib/types/timeline';
+import type { Tab } from '$lib/types/tabs';
+import { SvelteMap } from 'svelte/reactivity';
+import UploadZone from './UploadZone.svelte';
+import SessionViewer from './viewer/SessionViewer.svelte';
+import TabBar from './viewer/TabBar.svelte';
 
-	interface TabParseState {
-		parsing: boolean;
-		parsedSession: ParsedSession | null;
-		parseError: string | null;
-	}
+interface TabParseState {
+  parsing: boolean;
+  parsedSession: ParsedSession | null;
+  parseError: string | null;
+}
 
-	interface Props {
-		tabs: Tab[];
-		activeTabId: string;
-		onActivateTab: (id: string) => void;
-		onCloseTab: (id: string) => void;
-		onNewTab: () => void;
-		onUpload: (file: File) => Promise<SessionMeta>;
-		onUpdateTab: (tabId: string, updates: Partial<Pick<Tab, 'sessionId' | 'label' | 'filterText'>>) => void;
-		getSession: (id: string) => SessionMeta | undefined;
-		parseSessionById: (id: string) => Promise<ParsedSession>;
-		onGistLoad?: (url: string) => Promise<void>;
-		gistLoading?: boolean;
-		gistError?: string | null;
-		onDelete: (id: string) => void;
-	}
+interface Props {
+  tabs: Tab[];
+  activeTabId: string;
+  onActivateTab: (id: string) => void;
+  onCloseTab: (id: string) => void;
+  onNewTab: () => void;
+  onUpload: (file: File) => Promise<SessionMeta>;
+  onUpdateTab: (
+    tabId: string,
+    updates: Partial<Pick<Tab, 'sessionId' | 'label' | 'filterText'>>
+  ) => void;
+  getSession: (id: string) => SessionMeta | undefined;
+  parseSessionById: (id: string) => Promise<ParsedSession>;
+  onGistLoad?: (url: string) => Promise<void>;
+  gistLoading?: boolean;
+  gistError?: string | null;
+  onDelete: (id: string) => void;
+}
 
-	let {
-		tabs,
-		activeTabId,
-		onActivateTab,
-		onCloseTab,
-		onNewTab,
-		onUpload,
-		onUpdateTab,
-		getSession,
-		parseSessionById,
-		onGistLoad,
-		gistLoading = false,
-		gistError = null,
-		onDelete
-	}: Props = $props();
+let {
+  tabs,
+  activeTabId,
+  onActivateTab,
+  onCloseTab,
+  onNewTab,
+  onUpload,
+  onUpdateTab,
+  getSession,
+  parseSessionById,
+  onGistLoad,
+  gistLoading = false,
+  gistError = null,
+  onDelete,
+}: Props = $props();
 
-	// Per-tab parsing state — SvelteMap makes .set()/.get()/.delete() reactive
-	const tabParseStates = new SvelteMap<string, TabParseState>();
+// Per-tab parsing state — SvelteMap makes .set()/.get()/.delete() reactive
+const tabParseStates = new SvelteMap<string, TabParseState>();
 
-	const activeTab = $derived(tabs.find((t) => t.id === activeTabId));
-	const activeSessionId = $derived(activeTab?.sessionId ?? null);
-	const activeMeta = $derived(activeSessionId ? getSession(activeSessionId) : undefined);
+const activeTab = $derived(tabs.find(t => t.id === activeTabId));
+const activeSessionId = $derived(activeTab?.sessionId ?? null);
+const activeMeta = $derived(
+  activeSessionId ? getSession(activeSessionId) : undefined
+);
 
-	const activeParseState = $derived<TabParseState>(
-		tabParseStates.get(activeTabId) ?? { parsing: false, parsedSession: null, parseError: null }
-	);
+const activeParseState = $derived<TabParseState>(
+  tabParseStates.get(activeTabId) ?? {
+    parsing: false,
+    parsedSession: null,
+    parseError: null,
+  }
+);
 
-	// Parse session when tab's session changes
-	$effect(() => {
-		const tab = activeTab;
-		if (!tab || !tab.sessionId) return;
+// Parse session when tab's session changes
+$effect(() => {
+  const tab = activeTab;
+  if (!tab || !tab.sessionId) return;
 
-		const sessionId = tab.sessionId;
-		const existing = tabParseStates.get(tab.id);
+  const sessionId = tab.sessionId;
+  const existing = tabParseStates.get(tab.id);
 
-		// Skip if already parsed, parsing, or previously failed
-		if (existing?.parsedSession || existing?.parsing || existing?.parseError) return;
+  // Skip if already parsed, parsing, or previously failed
+  if (existing?.parsedSession || existing?.parsing || existing?.parseError)
+    return;
 
-		// Start parsing
-		tabParseStates.set(tab.id, { parsing: true, parsedSession: null, parseError: null });
+  // Start parsing
+  tabParseStates.set(tab.id, {
+    parsing: true,
+    parsedSession: null,
+    parseError: null,
+  });
 
-		parseSessionById(sessionId)
-			.then((parsed) => {
-				tabParseStates.set(tab.id, { parsing: false, parsedSession: parsed, parseError: null });
-			})
-			.catch((err) => {
-				tabParseStates.set(tab.id, {
-					parsing: false,
-					parsedSession: null,
-					parseError: err instanceof Error ? err.message : 'Failed to parse session'
-				});
-			});
-	});
+  parseSessionById(sessionId)
+    .then(parsed => {
+      tabParseStates.set(tab.id, {
+        parsing: false,
+        parsedSession: parsed,
+        parseError: null,
+      });
+    })
+    .catch(err => {
+      tabParseStates.set(tab.id, {
+        parsing: false,
+        parsedSession: null,
+        parseError:
+          err instanceof Error ? err.message : 'Failed to parse session',
+      });
+    });
+});
 
-	function retryParse() {
-		tabParseStates.delete(activeTabId);
-	}
+function retryParse() {
+  tabParseStates.delete(activeTabId);
+}
 
-	async function handleUpload(file: File) {
-		const meta = await onUpload(file);
-		// Update current tab with the new session
-		onUpdateTab(activeTabId, { sessionId: meta.id, label: meta.name });
-	}
+async function handleUpload(file: File) {
+  const meta = await onUpload(file);
+  // Update current tab with the new session
+  onUpdateTab(activeTabId, { sessionId: meta.id, label: meta.name });
+}
 </script>
 
 <main class="flex-1 flex flex-col overflow-hidden">

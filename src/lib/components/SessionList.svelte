@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { SessionMeta } from '$lib/types';
-	import SessionItem from './SessionItem.svelte';
+import type { SessionMeta } from '$lib/types';
+import SessionItem from './SessionItem.svelte';
 
-	interface Props {
-		sessions: SessionMeta[];
-		selectedId: string | null;
-		onSelect: (id: string) => void;
-		onRemove: (id: string) => void;
-	}
+interface Props {
+  sessions: SessionMeta[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  onRemove: (id: string) => void;
+}
 
-	let { sessions, selectedId, onSelect, onRemove }: Props = $props();
+let { sessions, selectedId, onSelect, onRemove }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-0.5">

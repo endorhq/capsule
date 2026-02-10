@@ -1,54 +1,54 @@
 <script lang="ts">
-	import type { ToolCallEntry as ToolCallType } from '$lib/types/timeline';
+import type { ToolCallEntry as ToolCallType } from '$lib/types/timeline';
 
-	interface Props {
-		entry: ToolCallType;
-	}
+interface Props {
+  entry: ToolCallType;
+}
 
-	let { entry }: Props = $props();
-	let expanded = $state(false);
-	let showFullOutput = $state(false);
+let { entry }: Props = $props();
+let expanded = $state(false);
+let showFullOutput = $state(false);
 
-	const statusColor = $derived(
-		entry.status === 'success'
-			? 'text-status-success'
-			: entry.status === 'error'
-				? 'text-status-error'
-				: entry.status === 'pending'
-					? 'text-status-pending'
-					: 'text-muted'
-	);
+const statusColor = $derived(
+  entry.status === 'success'
+    ? 'text-status-success'
+    : entry.status === 'error'
+      ? 'text-status-error'
+      : entry.status === 'pending'
+        ? 'text-status-pending'
+        : 'text-muted'
+);
 
-	const statusDot = $derived(
-		entry.status === 'success'
-			? 'bg-status-success'
-			: entry.status === 'error'
-				? 'bg-status-error'
-				: entry.status === 'pending'
-					? 'bg-status-pending'
-					: 'bg-muted'
-	);
+const statusDot = $derived(
+  entry.status === 'success'
+    ? 'bg-status-success'
+    : entry.status === 'error'
+      ? 'bg-status-error'
+      : entry.status === 'pending'
+        ? 'bg-status-pending'
+        : 'bg-muted'
+);
 
-	const meta = $derived(entry.resultMeta);
-	const outputText = $derived(meta?.output || entry.result || '');
-	const outputPreview = $derived(
-		outputText.length > 500 && !showFullOutput
-			? outputText.slice(0, 500)
-			: outputText
-	);
+const meta = $derived(entry.resultMeta);
+const outputText = $derived(meta?.output || entry.result || '');
+const outputPreview = $derived(
+  outputText.length > 500 && !showFullOutput
+    ? outputText.slice(0, 500)
+    : outputText
+);
 
-	// Build the inline summary shown in the collapsed header
-	const headerSummary = $derived.by((): string => {
-		if (entry.name === 'exec_command' && entry.arguments.cmd) {
-			const cmd = String(entry.arguments.cmd);
-			return cmd.length > 60 ? cmd.slice(0, 60) + '...' : cmd;
-		}
-		if (entry.name === 'apply_patch' && meta?.files?.length) {
-			return meta.files.join(', ');
-		}
-		if (entry.summary) return entry.summary;
-		return '';
-	});
+// Build the inline summary shown in the collapsed header
+const headerSummary = $derived.by((): string => {
+  if (entry.name === 'exec_command' && entry.arguments.cmd) {
+    const cmd = String(entry.arguments.cmd);
+    return cmd.length > 60 ? cmd.slice(0, 60) + '...' : cmd;
+  }
+  if (entry.name === 'apply_patch' && meta?.files?.length) {
+    return meta.files.join(', ');
+  }
+  if (entry.summary) return entry.summary;
+  return '';
+});
 </script>
 
 <div class="rounded-lg bg-surface-card/60 overflow-hidden opacity-70 hover:opacity-100 transition-opacity">

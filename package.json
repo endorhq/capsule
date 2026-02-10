@@ -1,30 +1,33 @@
 {
-	"name": "logs",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-cloudflare": "^7.2.6",
-		"@sveltejs/kit": "^2.50.1",
-		"@sveltejs/vite-plugin-svelte": "^6.2.4",
-		"@tailwindcss/vite": "^4.1.18",
-		"svelte": "^5.48.2",
-		"svelte-check": "^4.3.5",
-		"tailwindcss": "^4.1.18",
-		"typescript": "^5.9.3",
-		"vite": "^7.3.1"
-	},
-	"dependencies": {
-		"@endorhq/capsule-shared": "workspace:*",
-		"dompurify": "^3.3.1",
-		"marked": "^17.0.1"
-	}
+  "name": "logs",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "biome lint --write",
+    "format": "biome format --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "@sveltejs/adapter-cloudflare": "^7.2.6",
+    "@sveltejs/kit": "^2.50.1",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@tailwindcss/vite": "^4.1.18",
+    "svelte": "^5.48.2",
+    "svelte-check": "^4.3.5",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@endorhq/capsule-shared": "workspace:*",
+    "dompurify": "^3.3.1",
+    "marked": "^17.0.1"
+  }
 }

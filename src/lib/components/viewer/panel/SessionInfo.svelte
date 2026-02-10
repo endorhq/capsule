@@ -1,28 +1,36 @@
 <script lang="ts">
-	import type { ParsedSession } from '$lib/types/timeline';
-	import type { SessionMeta } from '$lib/types';
+import type { ParsedSession } from '$lib/types/timeline';
+import type { SessionMeta } from '$lib/types';
 
-	interface Props {
-		session: ParsedSession;
-		meta?: SessionMeta;
-	}
+interface Props {
+  session: ParsedSession;
+  meta?: SessionMeta;
+}
 
-	let { session, meta }: Props = $props();
+let { session, meta }: Props = $props();
 
-	const gistSource = $derived(meta?.source?.type === 'gist' ? meta.source : null);
+const gistSource = $derived(meta?.source?.type === 'gist' ? meta.source : null);
 
-	function formatDuration(seconds: number): string {
-		const m = Math.floor(seconds / 60);
-		const s = seconds % 60;
-		if (m === 0) return `${s}s`;
-		return `${m}m ${s}s`;
-	}
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  if (m === 0) return `${s}s`;
+  return `${m}m ${s}s`;
+}
 
-	function formatTime(date: Date): string {
-		return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-	}
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString('en-US', {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
 
-	const messageCount = $derived(session.timeline.filter((e) => e.type === 'user' || e.type === 'assistant').length);
+const messageCount = $derived(
+  session.timeline.filter(e => e.type === 'user' || e.type === 'assistant')
+    .length
+);
 </script>
 
 <div class="space-y-3">

@@ -1,49 +1,49 @@
 <script lang="ts">
-	import type { SubagentEntry as SubagentType } from '$lib/types/timeline';
+import type { SubagentEntry as SubagentType } from '$lib/types/timeline';
 
-	interface Props {
-		entry: SubagentType;
-		onSelect?: (entry: SubagentType) => void;
-		isActive?: boolean;
-	}
+interface Props {
+  entry: SubagentType;
+  onSelect?: (entry: SubagentType) => void;
+  isActive?: boolean;
+}
 
-	let { entry, onSelect, isActive = false }: Props = $props();
-	let expanded = $state(false);
-	let showFullResult = $state(false);
+let { entry, onSelect, isActive = false }: Props = $props();
+let expanded = $state(false);
+let showFullResult = $state(false);
 
-	const statusColor = $derived(
-		entry.status === 'success'
-			? 'text-status-success'
-			: entry.status === 'error'
-				? 'text-status-error'
-				: entry.status === 'pending'
-					? 'text-status-pending'
-					: 'text-muted'
-	);
+const statusColor = $derived(
+  entry.status === 'success'
+    ? 'text-status-success'
+    : entry.status === 'error'
+      ? 'text-status-error'
+      : entry.status === 'pending'
+        ? 'text-status-pending'
+        : 'text-muted'
+);
 
-	const statusDot = $derived(
-		entry.status === 'success'
-			? 'bg-status-success'
-			: entry.status === 'error'
-				? 'bg-status-error'
-				: entry.status === 'pending'
-					? 'bg-status-pending'
-					: 'bg-muted'
-	);
+const statusDot = $derived(
+  entry.status === 'success'
+    ? 'bg-status-success'
+    : entry.status === 'error'
+      ? 'bg-status-error'
+      : entry.status === 'pending'
+        ? 'bg-status-pending'
+        : 'bg-muted'
+);
 
-	const stepCount = $derived(entry.timeline.length);
-	const resultText = $derived(entry.result || '');
-	const resultPreview = $derived(
-		resultText.length > 500 && !showFullResult
-			? resultText.slice(0, 500)
-			: resultText
-	);
+const stepCount = $derived(entry.timeline.length);
+const resultText = $derived(entry.result || '');
+const resultPreview = $derived(
+  resultText.length > 500 && !showFullResult
+    ? resultText.slice(0, 500)
+    : resultText
+);
 
-	function formatTokens(n: number): string {
-		if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-		if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
-		return String(n);
-	}
+function formatTokens(n: number): string {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return String(n);
+}
 </script>
 
 <div class="rounded-lg bg-surface-card/60 overflow-hidden border {isActive ? 'border-accent/60 bg-accent/5' : 'border-accent/20'} transition-colors">

@@ -3,10 +3,10 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit()],
-	server: {
-		fs: {
-			allow: ['packages/shared']
-		}
-	}
+  plugins: [tailwindcss(), sveltekit()],
+  server: {
+    fs: {
+      allow: ['packages/shared'],
+    },
+  },
 });

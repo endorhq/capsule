@@ -1,23 +1,23 @@
 {
-	"name": "@endorhq/capsule",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"bin": {
-		"capsule": "./dist/index.js"
-	},
-	"scripts": {
-		"dev": "tsx src/index.ts",
-		"build": "tsup"
-	},
-	"dependencies": {
-		"@endorhq/capsule-shared": "workspace:*",
-		"@clack/prompts": "^0.10.0",
-		"picocolors": "^1.1.0"
-	},
-	"devDependencies": {
-		"typescript": "^5.9.3",
-		"tsup": "^8.0.0",
-		"tsx": "^4.0.0"
-	}
+  "name": "@endorhq/capsule",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "capsule": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@endorhq/capsule-shared": "workspace:*",
+    "@clack/prompts": "^0.10.0",
+    "picocolors": "^1.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0"
+  }
 }

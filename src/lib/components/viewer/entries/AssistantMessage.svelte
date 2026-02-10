@@ -1,17 +1,22 @@
 <script lang="ts">
-	import type { AssistantEntry } from '$lib/types/timeline';
-	import Markdown from '$lib/components/Markdown.svelte';
+import type { AssistantEntry } from '$lib/types/timeline';
+import Markdown from '$lib/components/Markdown.svelte';
 
-	interface Props {
-		entry: AssistantEntry;
-	}
+interface Props {
+  entry: AssistantEntry;
+}
 
-	let { entry }: Props = $props();
-	let showThinking = $state(false);
+let { entry }: Props = $props();
+let showThinking = $state(false);
 
-	function formatTime(date: Date): string {
-		return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-	}
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString('en-US', {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
 </script>
 
 <div class="px-4 pt-3">

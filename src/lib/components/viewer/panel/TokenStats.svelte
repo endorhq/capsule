@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type { TokenUsage } from '$lib/types/timeline';
+import type { TokenUsage } from '$lib/types/timeline';
 
-	interface Props {
-		tokens?: TokenUsage;
-		cost?: number;
-	}
+interface Props {
+  tokens?: TokenUsage;
+  cost?: number;
+}
 
-	let { tokens, cost }: Props = $props();
+let { tokens, cost }: Props = $props();
 
-	function fmt(n: number | undefined): string {
-		if (n === undefined) return '-';
-		return n.toLocaleString('en-US');
-	}
+function fmt(n: number | undefined): string {
+  if (n === undefined) return '-';
+  return n.toLocaleString('en-US');
+}
 </script>
 
 {#if tokens}

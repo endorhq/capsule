@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { SystemEntry } from '$lib/types/timeline';
+import type { SystemEntry } from '$lib/types/timeline';
 
-	interface Props {
-		entry: SystemEntry;
-	}
+interface Props {
+  entry: SystemEntry;
+}
 
-	let { entry }: Props = $props();
-	let expanded = $state(false);
+let { entry }: Props = $props();
+let expanded = $state(false);
 </script>
 
 <button

@@ -1,63 +1,76 @@
 <script lang="ts">
-	import type { TimelineEntry, SubagentEntry as SubagentType } from '$lib/types/timeline';
-	import UserMessage from './entries/UserMessage.svelte';
-	import AssistantMessage from './entries/AssistantMessage.svelte';
-	import ToolCallEntry from './entries/ToolCallEntry.svelte';
-	import SubagentEntry from './entries/SubagentEntry.svelte';
-	import SystemMessage from './entries/SystemMessage.svelte';
+import type {
+  TimelineEntry,
+  SubagentEntry as SubagentType,
+} from '$lib/types/timeline';
+import UserMessage from './entries/UserMessage.svelte';
+import AssistantMessage from './entries/AssistantMessage.svelte';
+import ToolCallEntry from './entries/ToolCallEntry.svelte';
+import SubagentEntry from './entries/SubagentEntry.svelte';
+import SystemMessage from './entries/SystemMessage.svelte';
 
-	interface Props {
-		timeline: TimelineEntry[];
-		onSubagentSelect?: (entry: SubagentType) => void;
-		activeSubagentId?: string | null;
-		userLabel?: string;
-		endMessage?: string;
-	}
+interface Props {
+  timeline: TimelineEntry[];
+  onSubagentSelect?: (entry: SubagentType) => void;
+  activeSubagentId?: string | null;
+  userLabel?: string;
+  endMessage?: string;
+}
 
-	let { timeline, onSubagentSelect, activeSubagentId = null, userLabel, endMessage }: Props = $props();
+let {
+  timeline,
+  onSubagentSelect,
+  activeSubagentId = null,
+  userLabel,
+  endMessage,
+}: Props = $props();
 
-	let showFullEnd = $state(false);
-	const endPreview = $derived(
-		endMessage && endMessage.length > 800 && !showFullEnd
-			? endMessage.slice(0, 800)
-			: endMessage
-	);
+let showFullEnd = $state(false);
+const endPreview = $derived(
+  endMessage && endMessage.length > 800 && !showFullEnd
+    ? endMessage.slice(0, 800)
+    : endMessage
+);
 
-	// Group consecutive tool_call, subagent, and system entries together so they
-	// render as a visually nested block between messages.
-	interface MessageGroup {
-		type: 'message';
-		entry: TimelineEntry;
-	}
-	interface ToolGroup {
-		type: 'tool_group';
-		entries: TimelineEntry[];
-	}
-	type Group = MessageGroup | ToolGroup;
+// Group consecutive tool_call, subagent, and system entries together so they
+// render as a visually nested block between messages.
+interface MessageGroup {
+  type: 'message';
+  entry: TimelineEntry;
+}
+interface ToolGroup {
+  type: 'tool_group';
+  entries: TimelineEntry[];
+}
+type Group = MessageGroup | ToolGroup;
 
-	const groups = $derived.by((): Group[] => {
-		const result: Group[] = [];
-		let pendingTools: TimelineEntry[] = [];
+const groups = $derived.by((): Group[] => {
+  const result: Group[] = [];
+  let pendingTools: TimelineEntry[] = [];
 
-		function flushTools() {
-			if (pendingTools.length > 0) {
-				result.push({ type: 'tool_group', entries: [...pendingTools] });
-				pendingTools = [];
-			}
-		}
+  function flushTools() {
+    if (pendingTools.length > 0) {
+      result.push({ type: 'tool_group', entries: [...pendingTools] });
+      pendingTools = [];
+    }
+  }
 
-		for (const entry of timeline) {
-			if (entry.type === 'tool_call' || entry.type === 'system' || entry.type === 'subagent') {
-				pendingTools.push(entry);
-			} else {
-				flushTools();
-				result.push({ type: 'message', entry });
-			}
-		}
-		flushTools();
+  for (const entry of timeline) {
+    if (
+      entry.type === 'tool_call' ||
+      entry.type === 'system' ||
+      entry.type === 'subagent'
+    ) {
+      pendingTools.push(entry);
+    } else {
+      flushTools();
+      result.push({ type: 'message', entry });
+    }
+  }
+  flushTools();
 
-		return result;
-	});
+  return result;
+});
 </script>
 
 <div class="flex-1 overflow-y-auto">

@@ -1,37 +1,37 @@
 <script lang="ts">
-	interface Props {
-		open: boolean;
-		title: string;
-		message: string;
-		confirmLabel?: string;
-		cancelLabel?: string;
-		variant?: 'danger' | 'default';
-		onConfirm: () => void;
-		onCancel: () => void;
-	}
+interface Props {
+  open: boolean;
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: 'danger' | 'default';
+  onConfirm: () => void;
+  onCancel: () => void;
+}
 
-	let {
-		open,
-		title,
-		message,
-		confirmLabel = 'Confirm',
-		cancelLabel = 'Cancel',
-		variant = 'default',
-		onConfirm,
-		onCancel
-	}: Props = $props();
+let {
+  open,
+  title,
+  message,
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  variant = 'default',
+  onConfirm,
+  onCancel,
+}: Props = $props();
 
-	function handleBackdropClick(e: MouseEvent) {
-		if (e.target === e.currentTarget) {
-			onCancel();
-		}
-	}
+function handleBackdropClick(e: MouseEvent) {
+  if (e.target === e.currentTarget) {
+    onCancel();
+  }
+}
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			onCancel();
-		}
-	}
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    onCancel();
+  }
+}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
