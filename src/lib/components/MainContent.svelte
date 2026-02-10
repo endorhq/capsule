@@ -2,6 +2,7 @@
 	import type { SessionMeta } from '$lib/types';
 	import type { ParsedSession } from '$lib/types/timeline';
 	import type { Tab } from '$lib/types/tabs';
+	import { SvelteMap } from 'svelte/reactivity';
 	import UploadZone from './UploadZone.svelte';
 	import SessionViewer from './viewer/SessionViewer.svelte';
 	import TabBar from './viewer/TabBar.svelte';
@@ -44,8 +45,8 @@
 		onDelete
 	}: Props = $props();
 
-	// Per-tab parsing state
-	let tabParseStates = $state<Map<string, TabParseState>>(new Map());
+	// Per-tab parsing state — SvelteMap makes .set()/.get()/.delete() reactive
+	const tabParseStates = new SvelteMap<string, TabParseState>();
 
 	const activeTab = $derived(tabs.find((t) => t.id === activeTabId));
 	const activeSessionId = $derived(activeTab?.sessionId ?? null);
@@ -63,17 +64,15 @@
 		const sessionId = tab.sessionId;
 		const existing = tabParseStates.get(tab.id);
 
-		// Skip if already parsed or parsing
-		if (existing?.parsedSession || existing?.parsing) return;
+		// Skip if already parsed, parsing, or previously failed
+		if (existing?.parsedSession || existing?.parsing || existing?.parseError) return;
 
 		// Start parsing
 		tabParseStates.set(tab.id, { parsing: true, parsedSession: null, parseError: null });
-		tabParseStates = new Map(tabParseStates);
 
 		parseSessionById(sessionId)
 			.then((parsed) => {
 				tabParseStates.set(tab.id, { parsing: false, parsedSession: parsed, parseError: null });
-				tabParseStates = new Map(tabParseStates);
 			})
 			.catch((err) => {
 				tabParseStates.set(tab.id, {
@@ -81,9 +80,12 @@
 					parsedSession: null,
 					parseError: err instanceof Error ? err.message : 'Failed to parse session'
 				});
-				tabParseStates = new Map(tabParseStates);
 			});
 	});
+
+	function retryParse() {
+		tabParseStates.delete(activeTabId);
+	}
 
 	async function handleUpload(file: File) {
 		const meta = await onUpload(file);
@@ -110,9 +112,28 @@
 			</div>
 		{:else if activeMeta && activeParseState.parseError}
 			<div class="flex items-center justify-center h-full text-sm">
-				<div class="text-center space-y-2">
-					<span class="text-status-error">// parse error</span>
-					<p class="text-muted text-xs">{activeParseState.parseError}</p>
+				<div class="text-center space-y-4 max-w-md px-6">
+					<div class="space-y-2">
+						<span class="text-status-error font-medium">// failed to load session</span>
+						<p class="text-muted text-xs leading-relaxed">
+							The file <span class="text-foreground/70">{activeMeta.name}</span> could not be parsed. It may be corrupted or in an unsupported format.
+						</p>
+					</div>
+					<pre class="text-xs text-status-error/70 bg-status-error/5 border border-status-error/10 rounded px-3 py-2 text-left whitespace-pre-wrap break-words">{activeParseState.parseError}</pre>
+					<div class="flex items-center justify-center gap-3">
+						<button
+							class="text-xs text-accent hover:text-accent/80 transition-colors cursor-pointer"
+							onclick={retryParse}
+						>
+							[retry]
+						</button>
+						<button
+							class="text-xs text-muted hover:text-status-error transition-colors cursor-pointer"
+							onclick={() => onDelete(activeMeta!.id)}
+						>
+							[delete session]
+						</button>
+					</div>
 				</div>
 			</div>
 		{:else if activeSessionId && !activeMeta}
