@@ -144,3 +144,7 @@ vite.config.ts.timestamp-*
 
 # Sveltekit
 /build
+
+# Packages
+packages/cli/dist
+packages/shared/dist

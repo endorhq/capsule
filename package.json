@@ -23,6 +23,7 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
+		"@endorhq/capsule-shared": "workspace:*",
 		"dompurify": "^3.3.1",
 		"marked": "^17.0.1"
 	}
