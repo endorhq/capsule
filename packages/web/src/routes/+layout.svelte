@@ -1,7 +1,9 @@
 <script lang="ts">
 import './layout.css';
+import posthog from 'posthog-js';
 import { onMount } from 'svelte';
-import { goto } from '$app/navigation';
+import { browser } from '$app/environment';
+import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
 import { page } from '$app/stores';
 import favicon from '$lib/assets/favicon.svg';
 import { getSessionState } from '$lib/state/sessions.svelte';
@@ -11,6 +13,11 @@ let { children } = $props();
 
 const sessionState = getSessionState();
 const tabState = getTabState();
+
+if (browser) {
+  beforeNavigate(() => posthog.capture('$pageleave'));
+  afterNavigate(() => posthog.capture('$pageview'));
+}
 
 onMount(async () => {
   await sessionState.initialize();
