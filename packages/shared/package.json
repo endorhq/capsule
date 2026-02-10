@@ -4,7 +4,12 @@
   "type": "module",
   "exports": {
     "./types/timeline": "./src/types/timeline.ts",
+    "./types/discovery": "./src/types/discovery.ts",
     "./parsers": "./src/parsers/index.ts",
-    "./parsers/*": "./src/parsers/*.ts"
+    "./parsers/*": "./src/parsers/*.ts",
+    "./discovery": "./src/discovery/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.2"
   }
 }

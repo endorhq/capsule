@@ -1,4 +1,3 @@
-export { discoverAllSessions } from '@endorhq/capsule-shared/discovery';
 export type {
   AgentSource,
   DiscoveredSession,

@@ -191,6 +191,17 @@ async function loadFromGist(gistInput: string): Promise<SessionMeta[]> {
   }
 }
 
+async function storeFromContent(
+  filename: string,
+  content: string,
+  source?: import('$lib/types').SessionSource
+): Promise<import('$lib/types').SessionMeta> {
+  const meta = await storeSessionFromContent(filename, content, source);
+  sessions.push(meta);
+  sortSessions();
+  return meta;
+}
+
 function setGistLoading(value: boolean) {
   gistLoading = value;
 }
@@ -236,6 +247,7 @@ export function getSessionState() {
     getSession,
     parseSessionById,
     loadFromGist,
+    storeFromContent,
     setGistLoading,
   };
 }

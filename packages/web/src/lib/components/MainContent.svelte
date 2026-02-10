@@ -1,8 +1,11 @@
 <script lang="ts">
 import { SvelteMap } from 'svelte/reactivity';
+import { isLocal } from '$lib/features';
 import type { SessionMeta } from '$lib/types';
+import type { AgentSource, DiscoveredSession } from '$lib/types/discovery';
 import type { Tab } from '$lib/types/tabs';
 import type { ParsedSession } from '$lib/types/timeline';
+import LocalSessionPicker from './LocalSessionPicker.svelte';
 import UploadZone from './UploadZone.svelte';
 import SessionViewer from './viewer/SessionViewer.svelte';
 import TabBar from './viewer/TabBar.svelte';
@@ -30,6 +33,14 @@ interface Props {
   gistLoading?: boolean;
   gistError?: string | null;
   onDelete: (id: string) => void;
+  // Local discovery props (local mode only)
+  discoverySources?: AgentSource[];
+  discoveryLoading?: boolean;
+  discoveryError?: string | null;
+  discoverySelectedAgent?: string | null;
+  onDiscoverySelectAgent?: (agent: string | null) => void;
+  onDiscoverySelectSession?: (session: DiscoveredSession) => void;
+  onDiscoveryRefresh?: () => void;
 }
 
 let {
@@ -46,6 +57,13 @@ let {
   gistLoading = false,
   gistError = null,
   onDelete,
+  discoverySources = [],
+  discoveryLoading = false,
+  discoveryError = null,
+  discoverySelectedAgent = null,
+  onDiscoverySelectAgent,
+  onDiscoverySelectSession,
+  onDiscoveryRefresh,
 }: Props = $props();
 
 // Per-tab parsing state — SvelteMap makes .set()/.get()/.delete() reactive
@@ -201,6 +219,16 @@ async function handleUpload(file: File) {
           </div>
         </div>
       </div>
+    {:else if isLocal && onDiscoverySelectAgent && onDiscoverySelectSession && onDiscoveryRefresh}
+      <LocalSessionPicker
+        sources={discoverySources}
+        loading={discoveryLoading}
+        error={discoveryError}
+        selectedAgent={discoverySelectedAgent}
+        onSelectAgent={onDiscoverySelectAgent}
+        onSelectSession={onDiscoverySelectSession}
+        onRefresh={onDiscoveryRefresh}
+      />
     {:else}
       <UploadZone
         onUpload={handleUpload}
