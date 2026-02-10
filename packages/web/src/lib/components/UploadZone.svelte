@@ -19,6 +19,20 @@ let dragCounter = $state(0);
 let fileInput: HTMLInputElement;
 let showLogsModal = $state(false);
 let gistInput = $state('');
+let sampleLoading = $state<string | null>(null);
+
+async function loadSample(name: string, filename: string) {
+  if (sampleLoading) return;
+  sampleLoading = name;
+  try {
+    const res = await fetch(`/samples/${filename}`);
+    const text = await res.text();
+    const file = new File([text], filename, { type: 'application/jsonl' });
+    onUpload(file);
+  } finally {
+    sampleLoading = null;
+  }
+}
 
 const isDragging = $derived(dragCounter > 0);
 
@@ -185,6 +199,29 @@ function handleFileChange(e: Event) {
         {#if gistError}
           <p class="text-xs text-status-error">{gistError}</p>
         {/if}
+      </div>
+
+      <div class="flex items-center gap-3 w-full my-1">
+        <div class="flex-1 border-t border-edge"></div>
+        <span class="text-xs text-muted">or try a session sample</span>
+        <div class="flex-1 border-t border-edge"></div>
+      </div>
+
+      <div class="flex gap-2 w-full">
+        <button
+          onclick={() => loadSample('claude', 'claude-sample.jsonl')}
+          disabled={!!sampleLoading}
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm border border-edge rounded hover:border-accent/50 hover:text-foreground-bright transition-colors cursor-pointer text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Claude Code
+        </button>
+        <button
+          onclick={() => loadSample('codex', 'codex-sample.jsonl')}
+          disabled={!!sampleLoading}
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm border border-edge rounded hover:border-accent/50 hover:text-foreground-bright transition-colors cursor-pointer text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Codex
+        </button>
       </div>
     {/if}
   </div>
