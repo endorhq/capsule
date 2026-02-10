@@ -32,12 +32,30 @@ import logo from '$lib/assets/logo.svg';
       Docs
     </a>
     <a
-      href="https://github.com/endorhq"
+      href="https://discord.gg/ruMJaQqVKa"
       target="_blank"
       rel="noopener noreferrer"
       class="hover:text-accent transition-colors duration-200"
     >
-      GitHub
+      Discord
+    </a>
+    <a
+      href="https://github.com/endorhq/capsule"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-edge hover:border-accent/50 hover:text-accent transition-all duration-200"
+    >
+      <svg
+        class="w-4 h-4"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+        />
+      </svg>
+      Star on GitHub
     </a>
   </nav>
 </header>

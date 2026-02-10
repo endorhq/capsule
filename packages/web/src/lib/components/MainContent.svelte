@@ -183,6 +183,38 @@ async function handleUpload(file: File) {
               [delete session]
             </button>
           </div>
+          <div
+            class="text-xs text-muted leading-relaxed border-t border-edge pt-8 mt-8 space-y-2"
+          >
+            <p>
+              Think this format should be supported?
+              <a
+                href="https://github.com/endorhq/capsule/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-accent hover:text-accent/80 transition-colors"
+                >Open an issue</a
+              >
+              or
+              <a
+                href="https://discord.gg/ruMJaQqVKa"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-accent hover:text-accent/80 transition-colors"
+                >join our Discord</a
+              >
+              to share failing sessions with the team.
+            </p>
+            <p class="text-muted/70">
+              You can use
+              <code
+                class="text-foreground/60 bg-foreground/5 px-1 py-0.5 rounded text-[11px]"
+              >
+                npx @endorhq/capsule share
+              </code>
+              to create a shareable link.
+            </p>
+          </div>
         </div>
       </div>
     {:else if activeSessionId && !activeMeta}
