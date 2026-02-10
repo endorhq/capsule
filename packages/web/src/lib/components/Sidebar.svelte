@@ -1,4 +1,5 @@
 <script lang="ts">
+import { isLocal } from '$lib/features';
 import type { SessionMeta } from '$lib/types';
 import LogsLocationModal from './LogsLocationModal.svelte';
 import SessionList from './SessionList.svelte';
@@ -13,6 +14,7 @@ interface Props {
   onUpload: (file: File) => void;
   onClearAll: () => void;
   onRemove: (id: string) => void;
+  onOpenSession?: () => void;
 }
 
 let {
@@ -24,6 +26,7 @@ let {
   onUpload,
   onClearAll,
   onRemove,
+  onOpenSession,
 }: Props = $props();
 
 let fileInput: HTMLInputElement;
@@ -44,25 +47,34 @@ function handleFileChange(e: Event) {
 >
   <div class="px-3 pt-3 pb-2">
     <p class="text-xs text-muted mb-3">// new</p>
-    <button
-      class="w-full py-2 text-sm font-medium bg-accent text-surface rounded cursor-pointer hover:brightness-110 transition"
-      onclick={() => fileInput.click()}
-    >
-      $ load --session
-    </button>
-    <input
-      bind:this={fileInput}
-      type="file"
-      accept=".jsonl,.json"
-      class="hidden"
-      onchange={handleFileChange}
-    />
-    <button
-      class="w-full mt-2 text-xs text-muted hover:text-accent transition-colors cursor-pointer text-left"
-      onclick={() => (showLogsModal = true)}
-    >
-      ? where can I find my session logs?
-    </button>
+    {#if isLocal}
+      <button
+        class="w-full py-2 text-sm font-medium bg-accent text-surface rounded cursor-pointer hover:brightness-110 transition"
+        onclick={onOpenSession}
+      >
+        $ open --session
+      </button>
+    {:else}
+      <button
+        class="w-full py-2 text-sm font-medium bg-accent text-surface rounded cursor-pointer hover:brightness-110 transition"
+        onclick={() => fileInput.click()}
+      >
+        $ load --session
+      </button>
+      <input
+        bind:this={fileInput}
+        type="file"
+        accept=".jsonl,.json"
+        class="hidden"
+        onchange={handleFileChange}
+      />
+      <button
+        class="w-full mt-2 text-xs text-muted hover:text-accent transition-colors cursor-pointer text-left"
+        onclick={() => (showLogsModal = true)}
+      >
+        ? where can I find my session logs?
+      </button>
+    {/if}
   </div>
 
   <div class="flex-1 overflow-y-auto px-1 py-1 mt-4">
@@ -85,7 +97,9 @@ function handleFileChange(e: Event) {
   <SidebarFooter {onClearAll} />
 </aside>
 
-<LogsLocationModal
-  open={showLogsModal}
-  onClose={() => (showLogsModal = false)}
-/>
+{#if !isLocal}
+  <LogsLocationModal
+    open={showLogsModal}
+    onClose={() => (showLogsModal = false)}
+  />
+{/if}
