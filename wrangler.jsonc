@@ -8,7 +8,7 @@
     "directory": "packages/web/.svelte-kit/cloudflare"
   },
   "build": {
-    "command": "ADAPTER=cloudflare pnpm -C packages/web build:cloudflare"
+    "command": "PUBLIC_DISTRIBUTION=public ADAPTER=cloudflare pnpm -C packages/web build:cloudflare"
   },
   "vars": {
     "PUBLIC_DISTRIBUTION": "public"

@@ -29,7 +29,7 @@ let {
   onOpenSession,
 }: Props = $props();
 
-let fileInput: HTMLInputElement;
+let fileInput = $state<HTMLInputElement>();
 let showLogsModal = $state(false);
 
 function handleFileChange(e: Event) {
@@ -57,7 +57,7 @@ function handleFileChange(e: Event) {
     {:else}
       <button
         class="w-full py-2 text-sm font-medium bg-accent text-surface rounded cursor-pointer hover:brightness-110 transition"
-        onclick={() => fileInput.click()}
+        onclick={() => fileInput?.click()}
       >
         $ load --session
       </button>
