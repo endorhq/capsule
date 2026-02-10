@@ -1,16 +1,16 @@
-import type { SessionMeta } from '$lib/types';
-import type { ParsedSession } from '$lib/types/timeline';
+import { parseSession } from '$lib/parsers';
+import { fetchGist, isGistError, parseGistUrl } from '$lib/services/gist';
 import {
+  clearAllSessions,
   initStorage,
   loadManifest,
+  readSessionFile,
+  removeSession,
   storeSession,
   storeSessionFromContent,
-  removeSession,
-  clearAllSessions,
-  readSessionFile,
 } from '$lib/services/storage.svelte';
-import { parseSession } from '$lib/parsers';
-import { parseGistUrl, fetchGist, isGistError } from '$lib/services/gist';
+import type { SessionMeta } from '$lib/types';
+import type { ParsedSession } from '$lib/types/timeline';
 
 let sessions = $state<SessionMeta[]>([]);
 let selectedId = $state<string | null>(null);

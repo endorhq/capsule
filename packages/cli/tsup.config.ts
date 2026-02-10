@@ -9,7 +9,8 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   dts: false,
-  noExternal: ['@logs/shared'],
+  noExternal: ['@endorhq/capsule-shared'],
+  external: ['@endorhq/capsule-web'],
   banner: {
     js: '#!/usr/bin/env node',
   },

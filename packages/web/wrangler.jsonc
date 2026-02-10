@@ -6,5 +6,11 @@
   "assets": {
     "binding": "ASSETS",
     "directory": ".svelte-kit/cloudflare"
+  },
+  "build": {
+    "command": "ADAPTER=cloudflare pnpm build:cloudflare"
+  },
+  "vars": {
+    "PUBLIC_DISTRIBUTION": "public"
   }
 }

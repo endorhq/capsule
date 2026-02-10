@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@endorhq/capsule-shared": "workspace:*",
+    "@endorhq/capsule-web": "workspace:*",
     "@clack/prompts": "^0.10.0",
     "picocolors": "^1.1.0"
   },
