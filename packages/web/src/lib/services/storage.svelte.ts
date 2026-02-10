@@ -1,5 +1,5 @@
-import type { SessionMeta, SessionSource } from '$lib/types';
 import { detectFormat } from '$lib/parsers/detect';
+import type { SessionMeta, SessionSource } from '$lib/types';
 
 type Backend = 'opfs' | 'indexeddb' | 'memory';
 

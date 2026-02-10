@@ -1,0 +1,33 @@
+{
+  "name": "@endorhq/capsule-web",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./handler": "./build/handler.js"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "PUBLIC_DISTRIBUTION=local vite build",
+    "build:cloudflare": "ADAPTER=cloudflare vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@endorhq/capsule-shared": "workspace:*",
+    "dompurify": "^3.3.1",
+    "marked": "^17.0.1"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-cloudflare": "^7.2.6",
+    "@sveltejs/adapter-node": "^5.5.2",
+    "@sveltejs/kit": "^2.50.1",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@tailwindcss/vite": "^4.1.18",
+    "svelte": "^5.48.2",
+    "svelte-check": "^4.3.5",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

@@ -1,5 +1,5 @@
-import { Marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { Marked } from 'marked';
 
 const marked = new Marked({
   gfm: true,

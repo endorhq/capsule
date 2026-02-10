@@ -1,5 +1,5 @@
-import type { Tab, PersistedTabState } from '$lib/types/tabs';
 import type { SessionMeta } from '$lib/types';
+import type { PersistedTabState, Tab } from '$lib/types/tabs';
 
 const STORAGE_KEY = 'endor:tabs';
 
