@@ -16,8 +16,10 @@ export default async function serve(): Promise<void> {
 
   p.intro(pc.bgCyan(pc.black(' capsule serve ')));
 
-  // Dynamic import so tsup doesn't try to bundle the web package
-  const { handler } = await import('@endorhq/capsule-web/handler');
+  // Use embedded web build (production) or workspace dependency (development)
+  const { handler } = await import(
+    new URL('../web/handler.js', import.meta.url).href
+  ).catch(() => import('@endorhq/capsule-web/handler'));
 
   const server = createServer(handler);
 

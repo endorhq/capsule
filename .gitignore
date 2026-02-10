@@ -144,6 +144,7 @@ vite.config.ts.timestamp-*
 
 # Packages
 packages/cli/dist
+packages/cli/web
 packages/cli/*.jsonl
 packages/shared/dist
 packages/web/build

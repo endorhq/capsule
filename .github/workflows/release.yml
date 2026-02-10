@@ -1,0 +1,176 @@
+name: Release
+run-name: Release v${{ github.event.inputs.targetVersion }} from ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      targetVersion:
+        description: 'Version to release (e.g. 1.0.0)'
+        type: string
+        required: true
+      publish:
+        description: 'Publish to NPM after a successful release'
+        required: true
+        type: boolean
+        default: false
+      dryRun:
+        description: 'Dry run (skip commits and publishing)'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  release:
+    timeout-minutes: 15
+    environment: production
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Echo inputs
+        run: |
+          echo "Version: $VERSION"
+          echo "Publish: $PUBLISH"
+          echo "Dry Run: $DRY_RUN"
+        env:
+          VERSION: ${{ inputs.targetVersion }}
+          PUBLISH: ${{ inputs.publish }}
+          DRY_RUN: ${{ inputs.dryRun }}
+
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Create or Update Release Branch
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+          VERSION="${{ inputs.targetVersion }}"
+          MAJOR_MINOR=$(echo "$VERSION" | cut -d. -f1,2)
+          BRANCH_NAME="release/v${MAJOR_MINOR}"
+
+          echo "Target version: $VERSION"
+          echo "Release branch: $BRANCH_NAME"
+
+          git fetch origin
+
+          if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+            echo "Branch $BRANCH_NAME already exists, checking it out..."
+            git checkout -B "$BRANCH_NAME" "origin/$BRANCH_NAME"
+          else
+            echo "Creating new branch $BRANCH_NAME..."
+            git checkout -b "$BRANCH_NAME"
+          fi
+
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Bump CLI Version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          TARGET_VERSION="${{ inputs.targetVersion }}"
+
+          if [ "$CURRENT_VERSION" == "$TARGET_VERSION" ]; then
+            echo "Version already set to $TARGET_VERSION, skipping bump"
+          else
+            pnpm version "$TARGET_VERSION" --no-workspaces-update
+          fi
+        working-directory: ./packages/cli
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Web
+        run: pnpm -C packages/web build
+
+      - name: Embed Web in CLI
+        run: cp -r packages/web/build packages/cli/web
+
+      - name: Build CLI
+        run: pnpm -C packages/cli build
+
+      - name: Package CLI
+        run: pnpm -C packages/cli pack --pack-destination ../../
+
+      - name: (Dry Run) Commit and tag
+        if: inputs.dryRun == true
+        run: echo "Skipping commit and tag phase."
+
+      - name: Commit and tag
+        if: inputs.dryRun == false
+        id: commit
+        env:
+          VERSION: '${{ inputs.targetVersion }}'
+          TAG_NAME: 'v${{ inputs.targetVersion }}'
+        run: |
+          git add packages/cli/package.json
+
+          if ! git diff --cached --quiet; then
+            git commit -m "release: bump cli to $VERSION"
+            echo "Created commit"
+          else
+            echo "No changes to commit, version already bumped"
+          fi
+
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+          echo "Commit SHA: $COMMIT_SHA"
+
+          if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            git tag -a "$TAG_NAME" -m "$TAG_NAME"
+            echo "Created tag: $TAG_NAME"
+          else
+            echo "Tag $TAG_NAME already exists"
+          fi
+
+          git push origin "${{ env.BRANCH_NAME }}"
+          git push --tags
+
+          echo "git_tag=$TAG_NAME" >> "$GITHUB_OUTPUT"
+          echo "commit_sha=$COMMIT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: (Dry Run) Create the release
+        if: inputs.dryRun == true
+        run: echo "Skipping create release phase."
+
+      - name: Create the release
+        if: inputs.dryRun == false
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: 'v${{ inputs.targetVersion }}'
+        run: |
+          ARTIFACT=$(find . -maxdepth 1 -name "*.tgz" -type f | head -1)
+
+          if gh release view "$TAG_NAME" &>/dev/null; then
+            echo "Release $TAG_NAME already exists, deleting to regenerate notes..."
+            gh release delete "$TAG_NAME" --yes
+          fi
+
+          echo "Creating release $TAG_NAME..."
+          gh release create "$TAG_NAME" \
+            --title "v${{ inputs.targetVersion }}" \
+            --generate-notes \
+            --target "${{ env.COMMIT_SHA }}" \
+            "$ARTIFACT"
+
+      - name: (Dry Run) Publish to NPM
+        if: inputs.dryRun == true || inputs.publish == false
+        run: echo "Skipping publish phase."
+
+      - name: Publish to NPM
+        if: inputs.dryRun == false && inputs.publish == true
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          ASSET=$(find . -maxdepth 1 -name "*.tgz" -type f | head -1)
+          echo "Publishing: $ASSET"
+          pnpm publish "$ASSET" --access public --no-git-checks
+          echo "Successfully published to NPM"
