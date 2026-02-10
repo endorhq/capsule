@@ -20,16 +20,16 @@ importers:
       '@clack/prompts':
         specifier: ^0.10.0
         version: 0.10.1
+      picocolors:
+        specifier: ^1.1.0
+        version: 1.1.1
+    devDependencies:
       '@endorhq/capsule-shared':
         specifier: workspace:*
         version: link:../shared
       '@endorhq/capsule-web':
         specifier: workspace:*
         version: link:../web
-      picocolors:
-        specifier: ^1.1.0
-        version: 1.1.1
-    devDependencies:
       tsup:
         specifier: ^8.0.0
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)
