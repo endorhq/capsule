@@ -12,7 +12,7 @@ function parsePortArg(): number | undefined {
 }
 
 export default async function serve(): Promise<void> {
-  const port = parsePortArg() || 3000;
+  const port = parsePortArg() || 3123;
 
   p.intro(pc.bgCyan(pc.black(' capsule serve ')));
 

@@ -36,7 +36,7 @@ The root (`./`) is not a workspace package — it holds monorepo tooling only (b
 
 - `capsule share [file]` — Publish a session to GitHub Gist
 - `capsule export [file]` — Save an anonymized session to a local file
-- `capsule serve [--port N]` — Start a local web viewer (default port 3000)
+- `capsule serve [--port N]` — Start a local web viewer (default port 3123)
 - `capsule --help` — Print usage
 - `pnpm -C packages/cli dev` — Run CLI via tsx (use `npx tsx src/index.ts <command>` for subcommands)
 - `pnpm -C packages/cli build` — Bundle CLI to `dist/index.js`
@@ -186,7 +186,7 @@ Deploy with `wrangler deploy` from the repo root, or via Cloudflare's Git integr
 
 1. `pnpm dev` — starts vite dev server at localhost:5173
 2. `pnpm build` — builds web with adapter-node (PUBLIC_DISTRIBUTION=local)
-3. `capsule serve` — serves the built web app at localhost:3000 with `isLocal === true`
+3. `capsule serve` — serves the built web app at localhost:3123 with `isLocal === true`
 
 ## Code Conventions
 
