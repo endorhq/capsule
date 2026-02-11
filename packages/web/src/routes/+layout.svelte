@@ -57,7 +57,11 @@ onMount(async () => {
   />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://capsule.endor.dev" />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content="https://capsule.endor.dev/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://capsule.endor.dev/og.png" />
   <meta name="twitter:title" content="Capsule by Endor" />
   <meta
     name="twitter:description"
