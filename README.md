@@ -104,10 +104,10 @@ pnpm dlx @endorhq/capsule export
 
 AI coding agents generate rich conversation logs, but **reviewing them is harder than it should be**:
 
-- **Hard to find.** Session files are buried in dotfiles across `~/.claude/`, `~/.codex/`, `~/.gemini/`, and different directories. Each agent stores them differently.
-- **Hard to read.** Raw `.jsonl` files are walls of JSON. Thousands of lines with nested tool calls, token metadata, and base64 content mixed in.
-- **Not interactive.** There's no way to filter, search, or collapse sections. You're scrolling through everything to find the one tool call that went wrong.
-- **Hard to share.** When something interesting (or broken) happens in a session, sharing it with your team helps reviewing the code.
+- 🔍 **Auto-discovery.** Capsule finds sessions across `~/.claude/`, `~/.codex/`, `~/.gemini/`, and more — no matter where each agent stores them.
+- 📄 **Readable timeline.** Thousands of lines of raw JSON become a clean, browsable conversation with tool calls and metadata organized inline.
+- 🖱️ **Fully interactive.** Filter, search, and collapse sections. Jump straight to the tool call that matters.
+- 🔗 **Easy sharing.** Share a session as a GitHub Gist and send your team a viewer link in seconds.
 
 Capsule solves this by giving you a single viewer that works with every major agent format. Upload a file or let the CLI find your sessions automatically. Browse the timeline, inspect tool calls, check token usage, and share a link when you need a second pair of eyes.
 
@@ -132,10 +132,12 @@ pnpm -C packages/web dev        # Start dev server at localhost:5173
 pnpm -C packages/web build        # Build the web
 
 # CLI
+
 # Build first the web and copy to work on serve command 
 PUBLIC_DISTRIBUTION=local pnpm -C packages/web build        # Build the web
 # Copy it
 cp -r ./packages/web/build ./packages/cli/web
+
 # Commands
 pnpm -C packages/cli dev        # Run the CLI
 pnpm -C packages/cli build        # Build the CLI
