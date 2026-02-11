@@ -14,9 +14,9 @@
 
 </div>
 
-AI coding agents don't make it easy to revisit past sessions, nor sharing them. Capsule is an **interactive inspector** that turns session logs into a **browsable and explorable timeline**. Check tool results inline, understand subagent purpose, filter by message, and understand what actually happened. When you need a second pair of eyes, share a session as a GitHub Gist.
+AI coding agents don't make it easy to revisit past sessions, nor sharing them. **Capsule is an interactive inspector** that turns session logs into a **browsable and explorable timeline**. 
 
-Works with Claude Code, Codex, Copilot, and Gemini.
+Check tool results inline, understand subagent purpose, filter by message, and understand what actually happened. When you need a second pair of eyes, share a session as a GitHub Gist. Works with Claude Code, Codex, Copilot, and Gemini.
 
 ![Capsule session viewer](https://github.com/user-attachments/assets/d0cb42ba-1ca6-4477-8355-6ddb7ef1cec8)
 
