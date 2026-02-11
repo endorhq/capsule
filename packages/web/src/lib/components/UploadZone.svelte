@@ -200,29 +200,6 @@ function handleFileChange(e: Event) {
           <p class="text-xs text-status-error">{gistError}</p>
         {/if}
       </div>
-
-      <div class="flex items-center gap-3 w-full my-1">
-        <div class="flex-1 border-t border-edge"></div>
-        <span class="text-xs text-muted">or try a session sample</span>
-        <div class="flex-1 border-t border-edge"></div>
-      </div>
-
-      <div class="flex gap-2 w-full">
-        <button
-          onclick={() => loadSample('claude', 'claude-sample.jsonl')}
-          disabled={!!sampleLoading}
-          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm border border-edge rounded hover:border-accent/50 hover:text-foreground-bright transition-colors cursor-pointer text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Claude Code
-        </button>
-        <button
-          onclick={() => loadSample('codex', 'codex-sample.jsonl')}
-          disabled={!!sampleLoading}
-          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm border border-edge rounded hover:border-accent/50 hover:text-foreground-bright transition-colors cursor-pointer text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Codex
-        </button>
-      </div>
     {/if}
   </div>
   <button
@@ -231,6 +208,34 @@ function handleFileChange(e: Event) {
   >
     ? where can I find my session logs?
   </button>
+  {#if onGistLoad}
+    <div
+      class="max-w-lg w-full mt-12 rounded-lg border border-accent/20 bg-accent/[0.03] p-5"
+    >
+      <div class="text-center mb-3">
+        <h3 class="text-sm font-semibold text-accent">Just curious?</h3>
+        <p class="text-xs text-muted mt-0.5">
+          Try a sample file to see how it looks
+        </p>
+      </div>
+      <div class="flex gap-2 w-full">
+        <button
+          onclick={() => loadSample('claude', 'claude-sample.jsonl')}
+          disabled={!!sampleLoading}
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm border border-accent/20 rounded hover:border-accent/50 hover:bg-accent/5 hover:text-foreground-bright transition-colors cursor-pointer text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Claude Code
+        </button>
+        <button
+          onclick={() => loadSample('codex', 'codex-sample.jsonl')}
+          disabled={!!sampleLoading}
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm border border-accent/20 rounded hover:border-accent/50 hover:bg-accent/5 hover:text-foreground-bright transition-colors cursor-pointer text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Codex
+        </button>
+      </div>
+    </div>
+  {/if}
 </div>
 
 <LogsLocationModal
