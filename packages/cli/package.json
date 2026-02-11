@@ -1,6 +1,6 @@
 {
   "name": "@endorhq/capsule",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Interactive AI coding agent session inspector. Explore, export, and share AI agent sessions easily.",
   "license": "Apache-2.0",
   "type": "module",
