@@ -1,4 +1,5 @@
 <script lang="ts">
+import ChevronIcon from 'virtual:icons/dinkie-icons/right-black-triangle';
 import Markdown from '$lib/components/Markdown.svelte';
 import type { AssistantEntry } from '$lib/types/timeline';
 
@@ -33,19 +34,9 @@ function formatTime(date: Date): string {
       class="flex items-center gap-1.5 text-xs text-muted mb-2 hover:text-foreground transition-colors"
       onclick={() => (showThinking = !showThinking)}
     >
-      <svg
+      <ChevronIcon
         class="w-3 h-3 transition-transform {showThinking ? 'rotate-90' : ''}"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="m8.25 4.5 7.5 7.5-7.5 7.5"
-        />
-      </svg>
+      />
       {entry.thinking.isEncrypted ? '// encrypted reasoning' : '// thinking'}
     </button>
     {#if showThinking && entry.thinking.text}
