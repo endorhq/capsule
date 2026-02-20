@@ -36,5 +36,5 @@ const canClose = $derived(tabs.length > 1 || tabs[0]?.sessionId !== null);
     +
   </button>
 
-  <div class="flex-1 border-b border-edge"></div>
+  <div class="flex-1"></div>
 </div>
