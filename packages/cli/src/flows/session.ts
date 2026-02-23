@@ -12,6 +12,14 @@ export interface ResolvedSession {
   format: AgentFormat;
 }
 
+export interface ResolveSessionOptions {
+  session?: string;
+  format?: AgentFormat;
+  interactive?: boolean;
+}
+
+const KNOWN_AGENTS: AgentFormat[] = ['claude', 'codex', 'copilot', 'gemini'];
+
 function formatDate(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -33,109 +41,166 @@ function formatDate(date: Date): string {
   );
 }
 
-export async function resolveSession(
-  fileArg?: string
-): Promise<ResolvedSession> {
-  let fileContent: string | undefined;
-  let format: AgentFormat | undefined;
+function parseSessionSpecifier(
+  session: string
+): { agent: AgentFormat; sessionId: string } | null {
+  const colonIdx = session.indexOf(':');
+  if (colonIdx === -1) return null;
 
-  if (fileArg) {
-    const resolved = resolve(fileArg);
-    try {
-      const s = await stat(resolved);
-      if (s.isFile()) {
-        fileContent = await readFile(resolved, 'utf-8');
-        const ext = extname(resolved);
-        const fileFormat = ext === '.json' ? 'json' : 'jsonl';
-        format = detectFormat(fileContent, fileFormat as 'json' | 'jsonl');
-        if (format === 'unknown') {
-          p.log.warn(`Could not auto-detect format for ${pc.dim(resolved)}`);
-          const formatChoice = await p.select({
-            message: 'Select the session format:',
-            options: [
-              { value: 'claude', label: 'Claude Code' },
-              { value: 'codex', label: 'Codex' },
-              { value: 'copilot', label: 'Copilot' },
-              { value: 'gemini', label: 'Gemini CLI' },
-            ],
-          });
-          if (p.isCancel(formatChoice)) {
-            p.cancel('Cancelled.');
-            process.exit(0);
-          }
-          format = formatChoice as AgentFormat;
-        }
-        p.log.info(`File: ${pc.cyan(resolved)} ${pc.dim(`(${format})`)}`);
-      }
-    } catch {
-      p.log.error(`File not found: ${fileArg}`);
-      process.exit(1);
-    }
+  const prefix = session.slice(0, colonIdx) as AgentFormat;
+  const id = session.slice(colonIdx + 1);
+
+  if (!KNOWN_AGENTS.includes(prefix) || !id) return null;
+  return { agent: prefix, sessionId: id };
+}
+
+async function resolveBySpecifier(
+  agent: AgentFormat,
+  sessionId: string
+): Promise<ResolvedSession> {
+  const sources = await discoverAllSessions();
+  const allSessions = sources.flatMap(s => s.sessions);
+  const match = allSessions.find(
+    s => s.agent === agent && s.sessionId.startsWith(sessionId)
+  );
+
+  if (!match) {
+    throw new Error(`No ${agent} session found matching ID '${sessionId}'`);
   }
 
-  if (!fileContent) {
-    const spinner = p.spinner();
-    spinner.start('Discovering agent sessions');
-    const sources = await discoverAllSessions();
-    spinner.stop('Discovery complete');
+  const content = await readFile(match.filePath, 'utf-8');
+  return { content, format: match.agent };
+}
 
-    if (sources.length === 0) {
-      p.log.error('No agent sessions found on this machine.');
-      p.log.info(pc.dim('Checked: ~/.claude, ~/.codex, ~/.copilot, ~/.gemini'));
-      p.outro('Nothing to do.');
-      process.exit(0);
-    }
+async function resolveByFile(
+  filePath: string,
+  formatOverride: AgentFormat | undefined,
+  interactive: boolean
+): Promise<ResolvedSession> {
+  const resolved = resolve(filePath);
+  let s: Awaited<ReturnType<typeof stat>>;
+  try {
+    s = await stat(resolved);
+  } catch {
+    throw new Error(`File not found: ${filePath}`);
+  }
 
-    let selectedSource: AgentSource;
-    if (sources.length === 1) {
-      selectedSource = sources[0];
-      p.log.info(
-        `Found ${pc.cyan(String(selectedSource.sessionCount))} ${selectedSource.label} sessions`
-      );
-    } else {
-      const sourceChoice = await p.select({
-        message: 'Select an agent:',
-        options: sources.map(s => ({
-          value: s,
-          label: `${s.label}`,
-          hint: `${s.sessionCount} sessions`,
-        })),
+  if (!s.isFile()) {
+    throw new Error(`Not a file: ${filePath}`);
+  }
+
+  const content = await readFile(resolved, 'utf-8');
+  const ext = extname(resolved);
+  const fileFormat = ext === '.json' ? 'json' : 'jsonl';
+  let format = detectFormat(content, fileFormat as 'json' | 'jsonl');
+
+  if (format === 'unknown') {
+    if (formatOverride) {
+      format = formatOverride;
+    } else if (interactive) {
+      p.log.warn(`Could not auto-detect format for ${pc.dim(resolved)}`);
+      const formatChoice = await p.select({
+        message: 'Select the session format:',
+        options: [
+          { value: 'claude', label: 'Claude Code' },
+          { value: 'codex', label: 'Codex' },
+          { value: 'copilot', label: 'Copilot' },
+          { value: 'gemini', label: 'Gemini CLI' },
+        ],
       });
-      if (p.isCancel(sourceChoice)) {
+      if (p.isCancel(formatChoice)) {
         p.cancel('Cancelled.');
         process.exit(0);
       }
-      selectedSource = sourceChoice;
+      format = formatChoice as AgentFormat;
+    } else {
+      throw new Error(
+        'Format could not be auto-detected. Use --format to specify.'
+      );
     }
+  }
 
-    const sessions = selectedSource.sessions;
+  if (interactive) {
+    p.log.info(`File: ${pc.cyan(resolved)} ${pc.dim(`(${format})`)}`);
+  }
 
-    const sessionChoice = await p.select<
-      DiscoveredSession[],
-      DiscoveredSession
-    >({
-      message: 'Select a session:',
-      options: sessions.slice(0, 50).map(s => ({
+  return { content, format };
+}
+
+async function resolveInteractively(): Promise<ResolvedSession> {
+  const spinner = p.spinner();
+  spinner.start('Discovering agent sessions');
+  const sources = await discoverAllSessions();
+  spinner.stop('Discovery complete');
+
+  if (sources.length === 0) {
+    p.log.error('No agent sessions found on this machine.');
+    p.log.info(pc.dim('Checked: ~/.claude, ~/.codex, ~/.copilot, ~/.gemini'));
+    p.outro('Nothing to do.');
+    process.exit(0);
+  }
+
+  let selectedSource: AgentSource;
+  if (sources.length === 1) {
+    selectedSource = sources[0];
+    p.log.info(
+      `Found ${pc.cyan(String(selectedSource.sessionCount))} ${selectedSource.label} sessions`
+    );
+  } else {
+    const sourceChoice = await p.select({
+      message: 'Select an agent:',
+      options: sources.map(s => ({
         value: s,
-        label: s.title,
-        hint: `${formatDate(s.date)}${s.cwd ? ` \u2022 ${pc.dim(s.cwd)}` : ''}`,
+        label: `${s.label}`,
+        hint: `${s.sessionCount} sessions`,
       })),
     });
-    if (p.isCancel(sessionChoice)) {
+    if (p.isCancel(sourceChoice)) {
       p.cancel('Cancelled.');
       process.exit(0);
     }
-
-    const selected = sessionChoice;
-    format = selected.agent;
-    fileContent = await readFile(selected.filePath, 'utf-8');
-    p.log.info(`Session: ${pc.cyan(selected.title)} ${pc.dim(`(${format})`)}`);
+    selectedSource = sourceChoice;
   }
 
-  if (!fileContent || !format) {
-    p.cancel('No session loaded.');
-    process.exit(1);
+  const sessions = selectedSource.sessions;
+
+  const sessionChoice = await p.select<DiscoveredSession[], DiscoveredSession>({
+    message: 'Select a session:',
+    options: sessions.slice(0, 50).map(s => ({
+      value: s,
+      label: s.title,
+      hint: `${formatDate(s.date)}${s.cwd ? ` \u2022 ${pc.dim(s.cwd)}` : ''}`,
+    })),
+  });
+  if (p.isCancel(sessionChoice)) {
+    p.cancel('Cancelled.');
+    process.exit(0);
   }
 
-  return { content: fileContent, format };
+  const selected = sessionChoice;
+  const format = selected.agent;
+  const content = await readFile(selected.filePath, 'utf-8');
+  p.log.info(`Session: ${pc.cyan(selected.title)} ${pc.dim(`(${format})`)}`);
+
+  return { content, format };
+}
+
+export async function resolveSession(
+  options: ResolveSessionOptions = {}
+): Promise<ResolvedSession> {
+  const { session, format, interactive = true } = options;
+
+  if (session) {
+    const specifier = parseSessionSpecifier(session);
+    if (specifier) {
+      return resolveBySpecifier(specifier.agent, specifier.sessionId);
+    }
+    return resolveByFile(session, format, interactive);
+  }
+
+  if (!interactive) {
+    throw new Error('Session argument required in non-interactive mode');
+  }
+
+  return resolveInteractively();
 }

@@ -1,52 +1,65 @@
+import { Command } from 'commander';
 import pc from 'picocolors';
 
-const USAGE = `
-${pc.bold('capsule')} — Share and view AI agent session logs
+const program = new Command();
 
-${pc.bold('Usage:')}
-  capsule share  [file]       Publish a session to GitHub Gist
-  capsule export [file]       Save a session to a local file
-  capsule serve  [--port N]   Start a local web viewer
+program
+  .name('capsule')
+  .version('0.0.1')
+  .description('Share and view AI agent session logs');
 
-${pc.bold('Options:')}
-  --help, -h                  Show this help message
-`;
+program
+  .command('share')
+  .description('Publish a session to GitHub Gist')
+  .argument('[session]', 'file path or agent:sessionId specifier')
+  .option(
+    '--format <format>',
+    'session format (claude, codex, copilot, gemini)'
+  )
+  .action(async (session: string | undefined, options: { format?: string }) => {
+    const { default: share } = await import('./commands/share.js');
+    await share(session, options);
+  });
 
-async function main() {
-  const command = process.argv[2];
-
-  if (!command || command === '--help' || command === '-h') {
-    console.log(USAGE);
-    process.exit(0);
-  }
-
-  const fileArg = process.argv[3];
-
-  switch (command) {
-    case 'share': {
-      const { default: share } = await import('./commands/share.js');
-      await share(fileArg);
-      break;
-    }
-    case 'export': {
+program
+  .command('export')
+  .description('Save a session to a local file')
+  .argument('[session]', 'file path or agent:sessionId specifier')
+  .option('--output <path>', 'output file path')
+  .option(
+    '--anonymize <value>',
+    'anonymization: all, none, or comma-separated options'
+  )
+  .option(
+    '--format <format>',
+    'session format (claude, codex, copilot, gemini)'
+  )
+  .action(
+    async (
+      session: string | undefined,
+      options: { output?: string; anonymize?: string; format?: string }
+    ) => {
       const { default: exportCmd } = await import('./commands/export.js');
-      await exportCmd(fileArg);
-      break;
+      await exportCmd(session, options);
     }
-    case 'serve': {
-      const { default: serve } = await import('./commands/serve.js');
-      await serve();
-      break;
-    }
-    default: {
-      console.error(`${pc.red('Unknown command:')} ${command}`);
-      console.log(USAGE);
-      process.exit(1);
-    }
-  }
-}
+  );
 
-main().catch(err => {
+program
+  .command('serve')
+  .description('Start a local web viewer')
+  .option('--port <number>', 'port number (default: 3123)', v => {
+    const n = Number.parseInt(v, 10);
+    if (Number.isNaN(n) || n <= 0 || n >= 65536) {
+      throw new Error(`Invalid port number: ${v}`);
+    }
+    return n;
+  })
+  .action(async (options: { port?: number }) => {
+    const { default: serve } = await import('./commands/serve.js');
+    await serve(options);
+  });
+
+program.parseAsync().catch(err => {
   console.error(pc.red(err instanceof Error ? err.message : String(err)));
   process.exit(1);
 });
