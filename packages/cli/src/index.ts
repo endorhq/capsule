@@ -1,52 +1,70 @@
-import pc from 'picocolors';
+import { Command, Option } from 'commander';
 
-const USAGE = `
-${pc.bold('capsule')} — Share and view AI agent session logs
+const program = new Command();
 
-${pc.bold('Usage:')}
-  capsule share  [file]       Publish a session to GitHub Gist
-  capsule export [file]       Save a session to a local file
-  capsule serve  [--port N]   Start a local web viewer
+program
+  .name('capsule')
+  .description('Share and view AI agent session logs')
+  .version('0.0.1');
 
-${pc.bold('Options:')}
-  --help, -h                  Show this help message
-`;
-
-async function main() {
-  const command = process.argv[2];
-
-  if (!command || command === '--help' || command === '-h') {
-    console.log(USAGE);
-    process.exit(0);
-  }
-
-  const fileArg = process.argv[3];
-
-  switch (command) {
-    case 'share': {
+program
+  .command('share')
+  .description('Publish a session to GitHub Gist')
+  .argument('[session]', 'file path or agent:id specifier')
+  .addOption(
+    new Option('-f, --format <format>', 'session format').choices([
+      'claude',
+      'codex',
+      'copilot',
+      'gemini',
+    ])
+  )
+  .option('--public', 'create a public gist')
+  .option('--secret', 'create a secret gist')
+  .option(
+    '-a, --anonymize <options>',
+    'comma-separated anonymization keys (or "all")'
+  )
+  .option('--no-anonymize', 'skip anonymization entirely')
+  .action(
+    async (session: string | undefined, options: Record<string, unknown>) => {
       const { default: share } = await import('./commands/share.js');
-      await share(fileArg);
-      break;
+      await share(session, options);
     }
-    case 'export': {
-      const { default: exportCmd } = await import('./commands/export.js');
-      await exportCmd(fileArg);
-      break;
-    }
-    case 'serve': {
-      const { default: serve } = await import('./commands/serve.js');
-      await serve();
-      break;
-    }
-    default: {
-      console.error(`${pc.red('Unknown command:')} ${command}`);
-      console.log(USAGE);
-      process.exit(1);
-    }
-  }
-}
+  );
 
-main().catch(err => {
-  console.error(pc.red(err instanceof Error ? err.message : String(err)));
-  process.exit(1);
-});
+program
+  .command('export')
+  .description('Save a session to a local file')
+  .argument('[session]', 'file path or agent:id specifier')
+  .addOption(
+    new Option('-f, --format <format>', 'session format').choices([
+      'claude',
+      'codex',
+      'copilot',
+      'gemini',
+    ])
+  )
+  .option(
+    '-a, --anonymize <options>',
+    'comma-separated anonymization keys (or "all")'
+  )
+  .option('--no-anonymize', 'skip anonymization entirely')
+  .option('--output <path>', 'output file path')
+  .action(
+    async (session: string | undefined, options: Record<string, unknown>) => {
+      const { default: exportCmd } = await import('./commands/export.js');
+      await exportCmd(session, options);
+    }
+  );
+
+program
+  .command('serve')
+  .description('Start a local web viewer')
+  .option('--port <number>', 'port number', '3123')
+  .action(async (options: Record<string, unknown>) => {
+    const { default: serve } = await import('./commands/serve.js');
+    await serve(options);
+  });
+
+program.parse();
