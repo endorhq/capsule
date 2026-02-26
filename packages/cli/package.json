@@ -1,0 +1,26 @@
+{
+  "name": "@endorhq/capsule",
+  "version": "0.0.1",
+  "description": "Interactive AI coding agent session inspector. Explore, export, and share AI agent sessions easily.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "capsule": "./dist/index.js"
+  },
+  "files": ["dist", "web", "README", "LICENSE"],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.10.0",
+    "picocolors": "^1.1.0"
+  },
+  "devDependencies": {
+    "@endorhq/capsule-shared": "workspace:*",
+    "@endorhq/capsule-web": "workspace:*",
+    "typescript": "^5.9.3",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@endorhq/capsule-root",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "pnpm": ">=10",
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.25.0",
+  "scripts": {
+    "dev": "pnpm -C packages/web dev",
+    "build": "pnpm -C packages/web build",
+    "lint": "biome lint --write",
+    "format": "biome format --write",
+    "postinstall": "lefthook install"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "lefthook": "^2.1.0"
+  }
+}
