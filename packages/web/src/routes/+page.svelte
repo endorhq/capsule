@@ -60,6 +60,7 @@ async function handleLocalSessionSelect(session: DiscoveredSession) {
   const content = await fetchSessionContent(session.filePath);
   const meta = await sessionState.storeFromContent(filename, content, {
     type: 'local',
+    filePath: session.filePath,
   });
   tabState.openTab(meta.id, meta.name);
 }
