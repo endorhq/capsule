@@ -142,6 +142,9 @@ vite.config.ts.timestamp-*
 /ui
 /sessions
 
+# Pnpm store
+.pnpm-store
+
 # Packages
 packages/cli/dist
 packages/cli/web
