@@ -2,6 +2,7 @@
 import GithubIcon from 'virtual:icons/dinkie-icons/github';
 import type { SessionMeta } from '$lib/types';
 import type { ParsedSession } from '$lib/types/timeline';
+import { isLocal } from '$lib/features';
 
 interface Props {
   session: ParsedSession;
@@ -11,6 +12,20 @@ interface Props {
 let { session, meta }: Props = $props();
 
 const gistSource = $derived(meta?.source?.type === 'gist' ? meta.source : null);
+const localFilePath = $derived(
+  meta?.source?.type === 'local' ? meta.source.filePath : undefined
+);
+
+let copied = $state(false);
+
+function copyPath() {
+  if (!localFilePath) return;
+  navigator.clipboard.writeText(localFilePath);
+  copied = true;
+  setTimeout(() => {
+    copied = false;
+  }, 1500);
+}
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -92,5 +107,31 @@ const messageCount = $derived(
         <span class="text-foreground">local file</span>
       {/if}
     </div>
+    {#if isLocal && localFilePath}
+      <div>
+        <div class="flex items-center justify-between">
+          <span class="text-muted">file</span>
+          <button
+            onclick={copyPath}
+            class="text-muted hover:text-accent transition-colors"
+            title="Copy file path"
+          >
+            {#if copied}
+              <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 8 7 12 13 4" />
+              </svg>
+            {:else}
+              <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="5" y="5" width="9" height="9" rx="1" />
+                <path d="M2 11V2.5A.5.5 0 0 1 2.5 2H11" />
+              </svg>
+            {/if}
+          </button>
+        </div>
+        <div class="text-foreground text-xs truncate mt-0.5" title={localFilePath}>
+          {localFilePath.replace(/^\/home\/[^/]+/, '~')}
+        </div>
+      </div>
+    {/if}
   </div>
 </div>
