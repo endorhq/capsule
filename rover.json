@@ -1,12 +1,8 @@
 {
   "version": "1.4",
-  "languages": [
-    "javascript"
-  ],
+  "languages": ["javascript"],
   "mcps": [],
-  "packageManagers": [
-    "pnpm"
-  ],
+  "packageManagers": ["pnpm"],
   "taskManagers": [],
   "attribution": true
 }
