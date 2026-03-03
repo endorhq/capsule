@@ -152,3 +152,8 @@ packages/cli/*.jsonl
 packages/shared/dist
 packages/web/build
 packages/web/.svelte-kit
+
+# Rover
+.rover/tasks/
+.rover/settings.json
+.rover/settings.local.json
