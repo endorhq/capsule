@@ -10,7 +10,8 @@
   "files": ["dist", "web", "README", "LICENSE"],
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsup"
+    "build": "tsup",
+    "test:e2e": "vitest run"
   },
   "dependencies": {
     "@clack/prompts": "^0.10.0",
@@ -19,8 +20,10 @@
   "devDependencies": {
     "@endorhq/capsule-shared": "workspace:*",
     "@endorhq/capsule-web": "workspace:*",
-    "typescript": "^5.9.3",
+    "execa": "^9.6.1",
     "tsup": "^8.0.0",
-    "tsx": "^4.0.0"
+    "tsx": "^4.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

@@ -1,0 +1,3 @@
+{"type":"session.start","sessionId":"copilot-test-001","timestamp":"2026-01-01T10:00:00.000Z","context":{"cwd":"/home/user/project","branch":"main"}}
+{"type":"user.message","content":"Hello from copilot","timestamp":"2026-01-01T10:00:01.000Z"}
+{"type":"assistant.message","content":"Hi there!","timestamp":"2026-01-01T10:00:02.000Z"}

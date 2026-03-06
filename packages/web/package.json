@@ -11,7 +11,8 @@
     "build": "PUBLIC_DISTRIBUTION=local vite build",
     "build:cloudflare": "ADAPTER=cloudflare vite build",
     "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@endorhq/capsule-shared": "workspace:*",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@iconify-json/dinkie-icons": "^1.2.0",
+    "@playwright/test": "^1.58.2",
     "@sveltejs/adapter-cloudflare": "^7.2.6",
     "@sveltejs/adapter-node": "^5.5.2",
     "@sveltejs/kit": "^2.50.1",

@@ -1,0 +1,17 @@
+{
+  "projectHash": "abc123",
+  "sessionId": "gemini-test-001",
+  "startTime": "2026-01-01T10:00:00.000Z",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hello from gemini",
+      "timestamp": "2026-01-01T10:00:01.000Z"
+    },
+    {
+      "role": "model",
+      "content": "Hi! How can I help?",
+      "timestamp": "2026-01-01T10:00:02.000Z"
+    }
+  ]
+}

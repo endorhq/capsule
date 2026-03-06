@@ -1,0 +1,3 @@
+{"type":"session_meta","session_id":"codex-test-001","originator":"codex","started_at":"2026-01-01T10:00:00.000Z","cwd":"/home/user/project"}
+{"type":"event_msg","event":{"role":"user","content":"Hello from codex"},"timestamp":"2026-01-01T10:00:01.000Z"}
+{"type":"event_msg","event":{"role":"assistant","content":"Hello! How can I help?"},"timestamp":"2026-01-01T10:00:02.000Z"}
