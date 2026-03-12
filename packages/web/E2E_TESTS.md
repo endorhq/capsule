@@ -8,7 +8,9 @@ Web E2E tests can use either Playwright (full browser) or vitest with @testing-l
 
 ## Suite: Upload & Parse
 
-Preconditions: Dev server or preview server running. Test page loaded.
+### Preconditions
+- Dev server or preview server running
+- Test page loaded
 
 ### Features
 
@@ -52,7 +54,8 @@ Preconditions: Dev server or preview server running. Test page loaded.
 
 ## Suite: Gist Loading
 
-Preconditions: Mock fetch or MSW intercepting GitHub Gist API requests.
+### Preconditions
+- Mock fetch or MSW intercepting GitHub Gist API requests
 
 ### Features
 
@@ -73,7 +76,8 @@ Preconditions: Mock fetch or MSW intercepting GitHub Gist API requests.
 
 ## Suite: Storage
 
-Preconditions: Storage initialized (OPFS, IndexedDB, or memory fallback).
+### Preconditions
+- Storage initialized (OPFS, IndexedDB, or memory fallback)
 
 ### Features
 
@@ -101,7 +105,8 @@ Preconditions: Storage initialized (OPFS, IndexedDB, or memory fallback).
 
 ## Suite: Session Viewer
 
-Preconditions: A session is uploaded and selected.
+### Preconditions
+- A session is uploaded and selected
 
 ### Features
 

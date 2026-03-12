@@ -6,7 +6,9 @@ The CLI has three subcommands (`share`, `export`, `serve`), a format-aware anony
 
 ## Suite: Export
 
-Preconditions: Built CLI binary available or commands importable via tsx. Temp output directory created.
+### Preconditions
+- Built CLI binary available or commands importable via tsx
+- Temp output directory created
 
 ### Features
 
@@ -38,7 +40,9 @@ Preconditions: Built CLI binary available or commands importable via tsx. Temp o
 
 ## Suite: Share
 
-Preconditions: Mock `gh` CLI script in `$PATH` that simulates auth success and gist creation. Temp directory for mock script.
+### Preconditions
+- Mock `gh` CLI script in `$PATH` that simulates auth success and gist creation
+- Temp directory for mock script
 
 ### Features
 
@@ -64,7 +68,9 @@ Preconditions: Mock `gh` CLI script in `$PATH` that simulates auth success and g
 
 ## Suite: Serve
 
-Preconditions: Web package is built (`pnpm build`). Port 0 for random assignment.
+### Preconditions
+- Web package is built (`pnpm build`)
+- Port 0 for random assignment
 
 ### Features
 
@@ -92,7 +98,8 @@ Preconditions: Web package is built (`pnpm build`). Port 0 for random assignment
 
 ## Suite: Anonymization
 
-Preconditions: Sample fixtures loaded for each format.
+### Preconditions
+- Sample fixtures loaded for each format
 
 ### Features
 
@@ -132,7 +139,8 @@ Preconditions: Sample fixtures loaded for each format.
 
 ## Suite: Discovery
 
-Preconditions: Temp directory simulating `$HOME` with mock agent log directories.
+### Preconditions
+- Temp directory simulating `$HOME` with mock agent log directories
 
 ### Features
 
