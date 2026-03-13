@@ -1,0 +1,4 @@
+This is not a valid session file.
+It contains random text that cannot be parsed
+as any known agent format.
+Lorem ipsum dolor sit amet.

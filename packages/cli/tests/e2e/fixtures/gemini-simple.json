@@ -1,0 +1,59 @@
+{
+  "startTime": "2025-01-15T10:00:00Z",
+  "lastUpdated": "2025-01-15T10:05:00Z",
+  "sessionId": "gemini-sess-001",
+  "projectHash": "abc123",
+  "messages": [
+    {
+      "type": "user",
+      "timestamp": "2025-01-15T10:00:00Z",
+      "content": "Create a new component at /home/user/projects/myapp/src/Button.tsx"
+    },
+    {
+      "type": "gemini",
+      "timestamp": "2025-01-15T10:00:05Z",
+      "model": "gemini-2.0-flash",
+      "content": "I'll create the Button component for you.",
+      "thoughts": [
+        {
+          "subject": "Component Design",
+          "description": "I should create a reusable button component with proper props."
+        }
+      ],
+      "tokens": {
+        "input": 100,
+        "output": 50,
+        "thoughts": 20,
+        "cached": 0,
+        "total": 170
+      },
+      "toolCalls": [
+        {
+          "name": "write_file",
+          "args": {
+            "path": "/home/user/projects/myapp/src/Button.tsx"
+          },
+          "status": "success",
+          "timestamp": "2025-01-15T10:00:06Z",
+          "result": [
+            {
+              "functionResponse": {
+                "response": {
+                  "output": "File written successfully"
+                }
+              }
+            }
+          ],
+          "resultDisplay": {
+            "filePath": "/home/user/projects/myapp/src/Button.tsx",
+            "isNewFile": true,
+            "diffStat": {
+              "model_added_lines": 15,
+              "model_removed_lines": 0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

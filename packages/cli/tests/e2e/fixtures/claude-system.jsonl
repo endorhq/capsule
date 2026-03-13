@@ -1,0 +1,4 @@
+{"sessionId":"sess-003","type":"system","timestamp":"2025-01-15T10:00:00Z","cwd":"/home/user/projects/myapp","message":{"content":"System initialization"}}
+{"sessionId":"sess-003","type":"file-history-snapshot","timestamp":"2025-01-15T10:00:01Z","cwd":"/home/user/projects/myapp","files":["/home/user/projects/myapp/src/index.ts"]}
+{"sessionId":"sess-003","type":"user","timestamp":"2025-01-15T10:00:02Z","cwd":"/home/user/projects/myapp","gitBranch":"feature/new-stuff","message":{"role":"user","content":"Hello"}}
+{"sessionId":"sess-003","type":"assistant","timestamp":"2025-01-15T10:00:05Z","cwd":"/home/user/projects/myapp","message":{"role":"assistant","content":[{"type":"text","text":"Hi there!"}],"usage":{"input_tokens":20,"output_tokens":10,"cache_creation_input_tokens":0,"cache_read_input_tokens":0}}}

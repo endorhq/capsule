@@ -1,0 +1,24 @@
+{
+  "startTime": "2025-01-15T10:00:00Z",
+  "lastUpdated": "2025-01-15T10:05:00Z",
+  "sessionId": "gemini-sess-001",
+  "projectHash": "abc123",
+  "messages": [
+    {
+      "type": "user",
+      "timestamp": "2025-01-15T10:00:00Z",
+      "content": "Create a new component"
+    },
+    {
+      "type": "gemini",
+      "timestamp": "2025-01-15T10:00:05Z",
+      "model": "gemini-2.0-flash",
+      "content": "I'll create the component for you.",
+      "tokens": {
+        "input": 100,
+        "output": 50,
+        "total": 150
+      }
+    }
+  ]
+}

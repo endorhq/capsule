@@ -11,6 +11,8 @@
   "scripts": {
     "dev": "pnpm -C packages/web dev",
     "build": "pnpm -C packages/web build",
+    "test": "pnpm -r run test",
+    "test:e2e": "pnpm -r run test:e2e",
     "lint": "biome lint --write",
     "format": "biome format --write",
     "postinstall": "lefthook install"

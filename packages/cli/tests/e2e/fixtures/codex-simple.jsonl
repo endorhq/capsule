@@ -1,0 +1,7 @@
+{"type":"session_meta","timestamp":"2025-01-15T10:00:00Z","payload":{"id":"codex-sess-001","originator":"codex-cli","cwd":"/home/user/projects/myapp","git":{"branch":"develop","repository_url":"https://github.com/user/myapp.git"}}}
+{"type":"event_msg","timestamp":"2025-01-15T10:00:01Z","payload":{"type":"user_message","message":"Fix the bug in utils.ts"}}
+{"type":"response_item","timestamp":"2025-01-15T10:00:05Z","payload":{"type":"reasoning","encrypted_content":"encrypted-data","summary":[{"text":"Analyzing the bug"}]}}
+{"type":"response_item","timestamp":"2025-01-15T10:00:06Z","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"I'll look at /home/user/projects/myapp/src/utils.ts to find the bug."}]}}
+{"type":"response_item","timestamp":"2025-01-15T10:00:07Z","payload":{"type":"function_call","call_id":"call-001","name":"read_file","arguments":"{\"path\":\"/home/user/projects/myapp/src/utils.ts\"}"}}
+{"type":"response_item","timestamp":"2025-01-15T10:00:08Z","payload":{"type":"function_call_output","call_id":"call-001","output":"{\"content\":\"export function add(a, b) { return a - b; }\"}"}}
+{"type":"event_msg","timestamp":"2025-01-15T10:00:10Z","payload":{"type":"token_count","input_tokens":100,"output_tokens":50}}
