@@ -4,7 +4,6 @@
 
 import { expect, test } from '@playwright/test';
 import {
-  fixturePath,
   uploadFixture,
   waitForSessionInSidebar,
   waitForTimeline,

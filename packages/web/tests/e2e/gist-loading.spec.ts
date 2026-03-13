@@ -74,7 +74,7 @@ test.describe('Gist Loading', () => {
 
   // category: core
   // skip: requires-real-gist
-  test.skip('gist loading with real GitHub API', async ({ page }) => {
+  test.skip('gist loading with real GitHub API', async ({ page: _page }) => {
     // Skip reason: requires-real-gist
     // This test would load a known public gist and verify
     // content renders correctly. Requires network access.

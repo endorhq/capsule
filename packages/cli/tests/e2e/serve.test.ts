@@ -2,7 +2,12 @@
 // Source: packages/cli/E2E_TESTS.md — Suite: Serve
 // Generator: /fp-generate
 
-import { createServer, type Server } from 'node:http';
+import {
+  createServer,
+  type IncomingMessage,
+  type Server,
+  type ServerResponse,
+} from 'node:http';
 import { afterEach, describe, expect, it } from 'vitest';
 
 describe('Serve', () => {
@@ -11,7 +16,7 @@ describe('Serve', () => {
   afterEach(async () => {
     if (server) {
       await new Promise<void>((resolve, reject) => {
-        server!.close(err => (err ? reject(err) : resolve()));
+        server?.close(err => (err ? reject(err) : resolve()));
       });
       server = undefined;
     }
@@ -20,7 +25,7 @@ describe('Serve', () => {
   // category: core
   it('starts HTTP server on specified port', async () => {
     // Create a minimal handler to test server binding
-    const handler = (_req: any, res: any) => {
+    const handler = (_req: IncomingMessage, res: ServerResponse) => {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end('<html><body>capsule</body></html>');
     };
@@ -28,7 +33,7 @@ describe('Serve', () => {
     server = createServer(handler);
 
     await new Promise<void>(resolve => {
-      server!.listen(0, '127.0.0.1', () => resolve());
+      server?.listen(0, '127.0.0.1', () => resolve());
     });
 
     const addr = server.address();
@@ -44,7 +49,7 @@ describe('Serve', () => {
 
   // category: core
   it('accepts custom port via server.listen', async () => {
-    const handler = (_req: any, res: any) => {
+    const handler = (_req: IncomingMessage, res: ServerResponse) => {
       res.writeHead(200);
       res.end('ok');
     };
@@ -53,7 +58,7 @@ describe('Serve', () => {
 
     // Use port 0 for random assignment
     await new Promise<void>(resolve => {
-      server!.listen(0, '127.0.0.1', () => resolve());
+      server?.listen(0, '127.0.0.1', () => resolve());
     });
 
     const addr = server.address() as { port: number };
@@ -66,7 +71,7 @@ describe('Serve', () => {
 
   // category: core
   it('handles graceful shutdown', async () => {
-    const handler = (_req: any, res: any) => {
+    const handler = (_req: IncomingMessage, res: ServerResponse) => {
       res.writeHead(200);
       res.end('ok');
     };
@@ -74,7 +79,7 @@ describe('Serve', () => {
     server = createServer(handler);
 
     await new Promise<void>(resolve => {
-      server!.listen(0, '127.0.0.1', () => resolve());
+      server?.listen(0, '127.0.0.1', () => resolve());
     });
 
     const addr = server.address() as { port: number };
@@ -82,7 +87,7 @@ describe('Serve', () => {
 
     // Close server (simulating SIGINT cleanup)
     await new Promise<void>((resolve, reject) => {
-      server!.close(err => (err ? reject(err) : resolve()));
+      server?.close(err => (err ? reject(err) : resolve()));
     });
 
     // Verify the port is released - a new server should be able to bind
@@ -105,8 +110,8 @@ describe('Serve', () => {
 
   // category: core
   it('responds with correct content-type for HTML', async () => {
-    const handler = (_req: any, res: any) => {
-      const url = new URL(_req.url, `http://${_req.headers.host}`);
+    const handler = (_req: IncomingMessage, res: ServerResponse) => {
+      const url = new URL(_req.url ?? '/', `http://${_req.headers.host}`);
       if (url.pathname === '/') {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end('<html></html>');
@@ -124,7 +129,7 @@ describe('Serve', () => {
 
     server = createServer(handler);
     await new Promise<void>(resolve => {
-      server!.listen(0, '127.0.0.1', () => resolve());
+      server?.listen(0, '127.0.0.1', () => resolve());
     });
 
     const addr = server.address() as { port: number };

@@ -81,9 +81,9 @@ describe('Discovery', () => {
 
     const claudeSource = sources.find(s => s.agent === 'claude');
     expect(claudeSource).toBeDefined();
-    expect(claudeSource!.sessions.length).toBeGreaterThanOrEqual(1);
+    expect(claudeSource?.sessions.length).toBeGreaterThanOrEqual(1);
 
-    const session = claudeSource!.sessions[0];
+    const session = claudeSource?.sessions[0];
     expect(session.agent).toBe('claude');
     expect(session.title).toContain('Hello Claude');
     expect(session.date).toBeInstanceOf(Date);
@@ -116,9 +116,9 @@ describe('Discovery', () => {
 
     const codexSource = sources.find(s => s.agent === 'codex');
     expect(codexSource).toBeDefined();
-    expect(codexSource!.sessions.length).toBeGreaterThanOrEqual(1);
+    expect(codexSource?.sessions.length).toBeGreaterThanOrEqual(1);
 
-    const session = codexSource!.sessions[0];
+    const session = codexSource?.sessions[0];
     expect(session.agent).toBe('codex');
     expect(session.title).toContain('Fix the bug');
   });
@@ -149,9 +149,9 @@ describe('Discovery', () => {
 
     const copilotSource = sources.find(s => s.agent === 'copilot');
     expect(copilotSource).toBeDefined();
-    expect(copilotSource!.sessions.length).toBeGreaterThanOrEqual(1);
+    expect(copilotSource?.sessions.length).toBeGreaterThanOrEqual(1);
 
-    const session = copilotSource!.sessions[0];
+    const session = copilotSource?.sessions[0];
     expect(session.agent).toBe('copilot');
     expect(session.sessionId).toBe('copilot-test-001');
   });
@@ -178,9 +178,9 @@ describe('Discovery', () => {
 
     const geminiSource = sources.find(s => s.agent === 'gemini');
     expect(geminiSource).toBeDefined();
-    expect(geminiSource!.sessions.length).toBeGreaterThanOrEqual(1);
+    expect(geminiSource?.sessions.length).toBeGreaterThanOrEqual(1);
 
-    const session = geminiSource!.sessions[0];
+    const session = geminiSource?.sessions[0];
     expect(session.agent).toBe('gemini');
     expect(session.title).toContain('Create component');
   });
@@ -265,10 +265,10 @@ describe('Discovery', () => {
 
     const claudeSource = sources.find(s => s.agent === 'claude');
     expect(claudeSource).toBeDefined();
-    expect(claudeSource!.sessions.length).toBe(2);
+    expect(claudeSource?.sessions.length).toBe(2);
 
     // First session should be newer
-    const [first, second] = claudeSource!.sessions;
+    const [first, second] = claudeSource?.sessions ?? [];
     expect(first.date.getTime()).toBeGreaterThan(second.date.getTime());
   });
 });

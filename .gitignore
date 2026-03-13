@@ -152,6 +152,7 @@ packages/cli/*.jsonl
 packages/shared/dist
 packages/web/build
 packages/web/.svelte-kit
+packages/web/test-results
 
 # Rover
 .rover/tasks/
