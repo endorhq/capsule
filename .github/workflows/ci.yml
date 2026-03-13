@@ -24,3 +24,56 @@ jobs:
 
       - run: pnpm biome lint --error-on-warnings
       - run: pnpm biome format
+
+  e2e-web:
+    name: E2E Tests (Web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm -C packages/web exec playwright install --with-deps chromium
+
+      - name: Run web E2E tests
+        run: pnpm -C packages/web test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: packages/web/test-results/
+          retention-days: 30
+
+  e2e-cli:
+    name: E2E Tests (CLI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build web (required for CLI serve)
+        run: pnpm build
+
+      - name: Build CLI
+        run: pnpm -C packages/cli build
+
+      - name: Run CLI E2E tests
+        run: pnpm -C packages/cli test:e2e
