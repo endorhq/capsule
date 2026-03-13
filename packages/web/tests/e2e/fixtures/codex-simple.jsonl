@@ -1,0 +1,3 @@
+{"type":"session_meta","timestamp":"2025-01-15T10:00:00Z","payload":{"id":"codex-sess-001","originator":"codex-cli","cwd":"/home/user/projects/myapp"}}
+{"type":"event_msg","timestamp":"2025-01-15T10:00:01Z","payload":{"type":"user_message","message":"Fix the bug"}}
+{"type":"response_item","timestamp":"2025-01-15T10:00:05Z","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"I'll fix the bug."}]}}

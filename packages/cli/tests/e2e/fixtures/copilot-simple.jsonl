@@ -1,0 +1,5 @@
+{"type":"session.start","timestamp":"2025-01-15T10:00:00Z","data":{"sessionId":"copilot-sess-001","startTime":"2025-01-15T10:00:00Z","context":{"cwd":"/home/user/projects/myapp","branch":"main","repository":"https://github.com/user/myapp.git"},"version":"1.0"}}
+{"type":"user.message","timestamp":"2025-01-15T10:00:01Z","data":{"content":"Refactor the auth module at /home/user/projects/myapp/src/auth.ts"}}
+{"type":"assistant.message","timestamp":"2025-01-15T10:00:05Z","data":{"content":"I'll refactor the auth module.","reasoningText":"The auth module needs restructuring for better separation of concerns.","reasoningOpaque":"encrypted-reasoning"}}
+{"type":"tool.execution_start","timestamp":"2025-01-15T10:00:06Z","data":{"toolCallId":"tc-001","name":"readFile","arguments":{"path":"/home/user/projects/myapp/src/auth.ts"}}}
+{"type":"tool.execution_complete","timestamp":"2025-01-15T10:00:07Z","data":{"toolCallId":"tc-001","name":"readFile","result":{"content":"export class Auth { login() {} logout() {} }","detailedContent":"Full file content here"}}}

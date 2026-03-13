@@ -1,0 +1,4 @@
+{"sessionId":"sess-001","type":"user","timestamp":"2025-01-15T10:00:00Z","cwd":"/home/user/projects/myapp","message":{"role":"user","content":"Hello, can you help me with my project?"}}
+{"sessionId":"sess-001","type":"assistant","timestamp":"2025-01-15T10:00:05Z","cwd":"/home/user/projects/myapp","message":{"role":"assistant","content":[{"type":"text","text":"Sure! I'd be happy to help with your project. What do you need?"}],"usage":{"input_tokens":50,"output_tokens":30}}}
+{"sessionId":"sess-001","type":"user","timestamp":"2025-01-15T10:01:00Z","cwd":"/home/user/projects/myapp","message":{"role":"user","content":"Please review the code"}}
+{"sessionId":"sess-001","type":"assistant","timestamp":"2025-01-15T10:01:05Z","cwd":"/home/user/projects/myapp","message":{"role":"assistant","content":[{"type":"text","text":"I'll review the code for you."}],"usage":{"input_tokens":80,"output_tokens":20}}}
