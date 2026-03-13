@@ -2,6 +2,14 @@
 
 The CLI has three subcommands (`share`, `export`, `serve`), a format-aware anonymization engine, and session discovery across four agent log directories. Tests shell out to the built CLI binary or import command functions directly.
 
+## Index
+
+- [Export](#suite-export)
+- [Share](#suite-share)
+- [Serve](#suite-serve)
+- [Anonymization](#suite-anonymization)
+- [Discovery](#suite-discovery)
+
 ---
 
 ## Suite: Export

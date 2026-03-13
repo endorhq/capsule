@@ -4,6 +4,13 @@ The web app is a SvelteKit single-page application that lets users upload, parse
 
 Web E2E tests can use either Playwright (full browser) or vitest with @testing-library/svelte for component-level E2E. The choice depends on what the team prefers for this project.
 
+## Index
+
+- [Upload & Parse](#suite-upload--parse)
+- [Gist Loading](#suite-gist-loading)
+- [Storage](#suite-storage)
+- [Session Viewer](#suite-session-viewer)
+
 ---
 
 ## Suite: Upload & Parse
