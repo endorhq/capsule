@@ -1,7 +1,7 @@
 import type { AgentFormat } from './types/timeline';
 
 export type SessionSource =
-  | { type: 'local' }
+  | { type: 'local'; filePath?: string }
   | { type: 'gist'; gistId: string; gistUrl: string; owner?: string };
 
 export interface SessionMeta {
